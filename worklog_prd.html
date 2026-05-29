@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PRD — WorkLog System v1.2</title>
+<style>
+:root{
+  --purple-50:#EEEDFE;--purple-100:#CECBF6;--purple-200:#AFA9EC;--purple-600:#534AB7;--purple-800:#3C3489;
+  --teal-50:#E1F5EE;--teal-100:#9FE1CB;--teal-600:#0F6E56;--teal-800:#085041;
+  --blue-50:#E6F1FB;--blue-100:#B5D4F4;--blue-600:#185FA5;--blue-800:#0C447C;
+  --amber-50:#FAEEDA;--amber-100:#FAC775;--amber-600:#854F0B;--amber-800:#633806;
+  --coral-50:#FAECE7;--coral-100:#F5C4B3;--coral-600:#993C1D;--coral-800:#712B13;
+  --green-50:#EAF3DE;--green-100:#C0DD97;--green-600:#3B6D11;--green-800:#27500A;
+  --gray-50:#F1EFE8;--gray-100:#D3D1C7;--gray-600:#5F5E5A;--gray-800:#444441;
+  --red-50:#FCEBEB;--red-100:#F7C1C1;--red-600:#A32D2D;--red-800:#791F1F;
+  --text:#1a1a18;--text-s:#5f5e5a;--text-t:#888780;--border:#d3d1c7;--bg:#fff;--bg-s:#f9f8f5;--bg-t:#f1efe8;
+}
+@media(prefers-color-scheme:dark){:root{
+  --text:#e8e6de;--text-s:#9c9a92;--text-t:#666460;--border:#3d3d3a;--bg:#1a1a18;--bg-s:#242420;--bg-t:#2c2c2a;
+  --purple-50:#26215C;--purple-100:#3C3489;--purple-200:#534AB7;--purple-600:#AFA9EC;--purple-800:#CECBF6;
+  --teal-50:#04342C;--teal-100:#085041;--teal-600:#5DCAA5;--teal-800:#9FE1CB;
+  --blue-50:#042C53;--blue-100:#0C447C;--blue-600:#85B7EB;--blue-800:#B5D4F4;
+  --amber-50:#412402;--amber-100:#633806;--amber-600:#EF9F27;--amber-800:#FAC775;
+  --coral-50:#4A1B0C;--coral-100:#712B13;--coral-600:#F0997B;--coral-800:#F5C4B3;
+  --green-50:#173404;--green-100:#27500A;--green-600:#97C459;--green-800:#C0DD97;
+  --gray-50:#2C2C2A;--gray-100:#444441;--gray-600:#B4B2A9;--gray-800:#D3D1C7;
+  --red-50:#501313;--red-100:#791F1F;--red-600:#F09595;--red-800:#F7C1C1;
+}}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:system-ui,-apple-system,sans-serif;font-size:15px;line-height:1.7;color:var(--text);background:var(--bg);max-width:900px;margin:0 auto;padding:40px 24px 100px;}
+h1{font-size:30px;font-weight:500;margin-bottom:6px;letter-spacing:-.02em;}
+h2{font-size:19px;font-weight:500;margin:52px 0 16px;padding-top:20px;border-top:0.5px solid var(--border);}
+h3{font-size:15px;font-weight:500;margin:28px 0 10px;}
+p{margin-bottom:12px;}
+code{font-family:ui-monospace,monospace;font-size:13px;background:var(--bg-t);padding:1px 5px;border-radius:4px;border:0.5px solid var(--border);}
+pre{background:var(--bg-s);border:0.5px solid var(--border);border-radius:10px;padding:16px 20px;overflow-x:auto;margin-bottom:16px;}
+pre code{background:none;border:none;padding:0;font-size:13px;line-height:1.7;}
+.meta{font-size:13px;color:var(--text-s);margin-bottom:36px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
+.badge{display:inline-block;font-size:11px;font-weight:500;padding:3px 9px;border-radius:20px;}
+.b-purple{background:var(--purple-50);color:var(--purple-800);}
+.b-blue{background:var(--blue-50);color:var(--blue-800);}
+.b-teal{background:var(--teal-50);color:var(--teal-800);}
+.b-amber{background:var(--amber-50);color:var(--amber-800);}
+.b-coral{background:var(--coral-50);color:var(--coral-800);}
+.b-green{background:var(--green-50);color:var(--green-800);}
+.b-gray{background:var(--gray-50);color:var(--gray-800);}
+.b-red{background:var(--red-50);color:var(--red-800);}
+.card{background:var(--bg-s);border:0.5px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:14px;}
+.card h3{margin-top:0;margin-bottom:12px;}
+.rule{border-left:2px solid var(--purple-600);padding:10px 14px;background:var(--purple-50);border-radius:0 8px 8px 0;margin-bottom:10px;font-size:14px;color:var(--purple-800);}
+.rule code{background:var(--purple-100);border-color:var(--purple-200);}
+.rule-amber{border-color:var(--amber-600);background:var(--amber-50);color:var(--amber-800);}
+.rule-amber code{background:var(--amber-100);border-color:var(--amber-100);}
+.rule-red{border-color:var(--red-600);background:var(--red-50);color:var(--red-800);}
+table{width:100%;border-collapse:collapse;font-size:14px;margin-bottom:14px;}
+th{text-align:left;padding:9px 12px;background:var(--bg-t);border-bottom:0.5px solid var(--border);font-weight:500;font-size:12px;color:var(--text-s);text-transform:uppercase;letter-spacing:.04em;}
+td{padding:9px 12px;border-bottom:0.5px solid var(--border);vertical-align:top;line-height:1.5;}
+tr:last-child td{border-bottom:none;}
+.hier{display:flex;flex-direction:column;gap:0;}
+.hier-row{display:flex;align-items:stretch;}
+.hier-indent{width:24px;flex-shrink:0;position:relative;}
+.hier-indent::before{content:'';position:absolute;left:11px;top:0;bottom:0;width:1px;background:var(--border);}
+.hier-row:last-child .hier-indent::before{height:22px;}
+.hier-indent::after{content:'';position:absolute;left:11px;top:22px;width:10px;height:1px;background:var(--border);}
+.hier-box{flex:1;margin:3px 0;padding:8px 12px;border-radius:8px;font-size:14px;}
+.hier-top{border-left:2px solid var(--purple-600);background:var(--purple-50);color:var(--purple-800);font-weight:500;}
+.hier-l1{border-left:2px solid var(--blue-600);background:var(--blue-50);color:var(--blue-800);}
+.hier-l2{border-left:2px solid var(--amber-600);background:var(--amber-50);color:var(--amber-800);}
+.hier-l3{border-left:2px solid var(--coral-600);background:var(--coral-50);color:var(--coral-800);}
+.hier-l4{border-left:2px solid var(--green-600);background:var(--green-50);color:var(--green-800);}
+.hier-sub{font-size:12px;opacity:.8;margin-left:8px;font-weight:400;}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+@media(max-width:640px){.grid-2{grid-template-columns:1fr;}}
+.sprint-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:16px;}
+.sprint{border-radius:10px;padding:14px 16px;font-size:13px;line-height:1.6;}
+.intro{font-size:14px;color:var(--text-s);margin-bottom:20px;line-height:1.6;}
+.toc{background:var(--bg-s);border:0.5px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:40px;}
+.toc a{color:var(--text-s);text-decoration:none;font-size:14px;display:block;padding:3px 0;}
+.toc a:hover{color:var(--text);}
+.toc-section{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-t);margin:10px 0 4px;}
+.toc-section:first-child{margin-top:0;}
+.inline-note{font-size:13px;color:var(--text-s);margin-top:6px;}
+.vibe-step{counter-increment:step;}
+.vibe-step::before{content:counter(step);display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--purple-600);color:#fff;font-size:11px;font-weight:700;margin-right:8px;flex-shrink:0;}
+.vibe-step{display:flex;align-items:flex-start;gap:0;margin-bottom:10px;font-size:14px;line-height:1.6;}
+.vibe-wrap{counter-reset:step;}
+.prompt-box{background:var(--bg-t);border:0.5px solid var(--border);border-radius:8px;padding:14px 16px;font-size:13px;line-height:1.7;margin-bottom:10px;position:relative;}
+.prompt-box::before{content:"Prompt";font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-t);display:block;margin-bottom:6px;}
+.prompt-box p{margin:0;color:var(--text-s);}
+.prompt-box code{background:var(--bg-s);}
+.color-swatch{display:inline-block;width:16px;height:16px;border-radius:4px;vertical-align:middle;margin-right:6px;border:0.5px solid var(--border);}
+</style>
+</head>
+<body>
+
+<h1>WorkLog</h1>
+<div class="meta">
+  <span>Documento de Requisitos de Produto</span>
+  <span class="badge b-purple">v1.2</span>
+  <span class="badge b-amber">Rascunho</span>
+  <span style="color:var(--text-t)">Maio 2026</span>
+</div>
+
+<p>Sistema de gestão de trabalho pessoal para profissionais multi-empresa. Hierarquia clara: <strong>Empresa → Projeto → Demanda → Registro Diário</strong>. Cada registro diário referencia demandas existentes. Exportação semanal em PDF com evidências.</p>
+
+<!-- TOC -->
+<div class="toc">
+  <div class="toc-section">Produto</div>
+  <a href="#hierarquia">Hierarquia de dados</a>
+  <a href="#fluxo">Fluxograma</a>
+  <a href="#modulos">Módulos e entidades</a>
+  <a href="#requisitos">Requisitos funcionais</a>
+  <a href="#regras">Regras de negócio</a>
+  <div class="toc-section">Implementação</div>
+  <a href="#identidade">Identidade visual e design tokens</a>
+  <a href="#stack">Stack técnica recomendada</a>
+  <a href="#persistencia">Persistência, backup e portabilidade</a>
+  <a href="#vibecoding">Guia de vibe coding — Claude Code</a>
+  <a href="#deploy">Deploy no Vercel</a>
+  <a href="#roadmap">Roadmap de sprints</a>
+</div>
+
+<!-- ═══════════════════════════════════════
+     HIERARQUIA
+════════════════════════════════════════ -->
+<h2 id="hierarquia">Hierarquia de dados</h2>
+<p class="intro">Todo dado pertence a uma empresa. Abaixo dela, projetos agrupam demandas. Registros diários são entradas livres que referenciam demandas já criadas — eles não criam demandas, apenas as citam.</p>
+
+<div class="hier">
+  <div class="hier-row">
+    <div class="hier-box hier-top">Empresa <span class="hier-sub">namespace raiz — dados 100% isolados</span></div>
+  </div>
+  <div class="hier-row">
+    <div class="hier-indent"></div>
+    <div class="hier-box hier-l1">Projeto <span class="hier-sub">agrupador de demandas · N projetos por empresa</span></div>
+  </div>
+  <div class="hier-row">
+    <div class="hier-indent"></div>
+    <div class="hier-indent"></div>
+    <div class="hier-box hier-l2">Demanda <span class="hier-sub">tarefa / reunião / alinhamento · vinculada a 1 projeto</span></div>
+  </div>
+  <div class="hier-row">
+    <div class="hier-indent"></div>
+    <div class="hier-indent"></div>
+    <div class="hier-indent"></div>
+    <div class="hier-box" style="border-left:2px solid var(--amber-600);background:var(--amber-50);color:var(--amber-800);font-size:14px;">Links externos <span class="hier-sub">Jira · Linear · Trello · GitHub · etc.</span></div>
+  </div>
+  <div class="hier-row">
+    <div class="hier-indent"></div>
+    <div class="hier-indent"></div>
+    <div class="hier-indent"></div>
+    <div class="hier-box" style="border-left:2px solid var(--teal-600);background:var(--teal-50);color:var(--teal-800);font-size:14px;">Registro de tempo <span class="hier-sub">timer ou lançamento manual</span></div>
+  </div>
+  <div class="hier-row">
+    <div class="hier-indent"></div>
+    <div class="hier-box hier-l3">Registro diário <span class="hier-sub">entrada de data · referencia N demandas · tem imagens e notas</span></div>
+  </div>
+  <div class="hier-row">
+    <div class="hier-indent"></div>
+    <div class="hier-box hier-l4">Relatório PDF <span class="hier-sub">visão semanal gerada a partir da hierarquia acima</span></div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:16px;">
+  <h3>Distinção crítica — Demanda vs Registro diário</h3>
+  <div class="rule">Uma <strong>demanda</strong> é uma unidade de trabalho criada dentro de um projeto. Ela tem ciclo de vida, prioridade, timer e links.</div>
+  <div class="rule rule-amber">Um <strong>registro diário</strong> é um log de "o que foi feito hoje". Ele <em>referencia</em> demandas existentes — não cria nem duplica. Um mesmo dia pode ter N demandas referenciadas.</div>
+  <div class="rule" style="border-color:var(--teal-600);background:var(--teal-50);color:var(--teal-800);">O registro diário pertence à <strong>empresa ativa</strong>, mas pode referenciar demandas de qualquer projeto dessa empresa.</div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     FLUXOGRAMA (SVG inline)
+════════════════════════════════════════ -->
+<h2 id="fluxo">Fluxograma de navegação</h2>
+<p class="intro">Fluxo top-down seguindo a hierarquia real: empresa → projeto → demanda → registro diário → relatório.</p>
+
+<div style="margin:24px 0 8px;">
+<svg width="100%" viewBox="0 0 680 980" role="img" xmlns="http://www.w3.org/2000/svg">
+<title>WorkLog — fluxo de navegação hierárquico</title>
+<desc>Diagrama top-down: acesso → empresa → projeto → demandas (com timer e links) → registros diários (referenciam demandas) → relatório PDF.</desc>
+<defs>
+  <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+</defs>
+<style>
+  .n{font-family:system-ui,sans-serif;font-size:13px;font-weight:500;fill:#3C3489;}
+  .s{font-family:system-ui,sans-serif;font-size:11px;fill:#534AB7;}
+  .ln{stroke:#B4B2A9;stroke-width:1;fill:none;marker-end:url(#arr);}
+  .ld{stroke:#B4B2A9;stroke-width:0.8;fill:none;stroke-dasharray:4 3;}
+  /* Empresa */
+  .bx-e{fill:#EEEDFE;stroke:#AFA9EC;stroke-width:0.5;}
+  .nt-e{fill:#3C3489;font-size:13px;font-weight:500;font-family:system-ui,sans-serif;}
+  .st-e{fill:#534AB7;font-size:11px;font-family:system-ui,sans-serif;}
+  /* Projeto */
+  .bx-p{fill:#E6F1FB;stroke:#85B7EB;stroke-width:0.5;}
+  .nt-p{fill:#0C447C;font-size:13px;font-weight:500;font-family:system-ui,sans-serif;}
+  .st-p{fill:#185FA5;font-size:11px;font-family:system-ui,sans-serif;}
+  /* Demanda */
+  .bx-d{fill:#FAEEDA;stroke:#EF9F27;stroke-width:0.5;}
+  .nt-d{fill:#633806;font-size:13px;font-weight:500;font-family:system-ui,sans-serif;}
+  .st-d{fill:#854F0B;font-size:11px;font-family:system-ui,sans-serif;}
+  /* Registro */
+  .bx-r{fill:#FAECE7;stroke:#F0997B;stroke-width:0.5;}
+  .nt-r{fill:#712B13;font-size:13px;font-weight:500;font-family:system-ui,sans-serif;}
+  .st-r{fill:#993C1D;font-size:11px;font-family:system-ui,sans-serif;}
+  /* PDF */
+  .bx-g{fill:#EAF3DE;stroke:#97C459;stroke-width:0.5;}
+  .nt-g{fill:#27500A;font-size:13px;font-weight:500;font-family:system-ui,sans-serif;}
+  .st-g{fill:#3B6D11;font-size:11px;font-family:system-ui,sans-serif;}
+  /* sub-blocos teal e amber */
+  .bx-t{fill:#E1F5EE;stroke:#5DCAA5;stroke-width:0.5;}
+  .nt-t{fill:#085041;font-size:12px;font-weight:500;font-family:system-ui,sans-serif;}
+  .st-t{fill:#0F6E56;font-size:10px;font-family:system-ui,sans-serif;}
+  .bx-a{fill:#FAEEDA;stroke:#FAC775;stroke-width:0.5;}
+  .nt-a{fill:#633806;font-size:12px;font-weight:500;font-family:system-ui,sans-serif;}
+  /* gray neutro */
+  .bx-n{fill:#F1EFE8;stroke:#D3D1C7;stroke-width:0.5;}
+  .nt-n{fill:#444441;font-size:13px;font-weight:500;font-family:system-ui,sans-serif;}
+</style>
+
+<!-- ENTRADA -->
+<rect class="bx-n" x="230" y="16" width="220" height="38" rx="19"/>
+<text class="nt-n" x="340" y="35" text-anchor="middle" dominant-baseline="central">Acesso ao sistema</text>
+<line x1="340" y1="54" x2="340" y2="78" class="ln" stroke="#B4B2A9"/>
+
+<!-- EMPRESA -->
+<rect class="bx-e" x="140" y="78" width="400" height="52" rx="8"/>
+<text class="nt-e" x="340" y="97" text-anchor="middle" dominant-baseline="central">Painel de empresas</text>
+<text class="st-e" x="340" y="116" text-anchor="middle" dominant-baseline="central">Selecionar · criar · trocar empresa ativa</text>
+<!-- nova empresa -->
+<path d="M540 104 L590 104" class="ld"/>
+<rect class="bx-e" x="590" y="88" width="76" height="32" rx="6"/>
+<text class="nt-e" x="628" y="104" text-anchor="middle" dominant-baseline="central" style="font-size:11px">+ Nova</text>
+<path d="M628 120 L628 138 L340 138" class="ld"/>
+<line x1="340" y1="130" x2="340" y2="154" class="ln" stroke="#AFA9EC"/>
+
+<!-- WORKSPACE -->
+<rect class="bx-e" x="100" y="154" width="480" height="52" rx="8"/>
+<text class="nt-e" x="340" y="173" text-anchor="middle" dominant-baseline="central">Workspace da empresa</text>
+<text class="st-e" x="340" y="191" text-anchor="middle" dominant-baseline="central">Membros · configurações · todos os projetos</text>
+<line x1="340" y1="206" x2="340" y2="232" class="ln" stroke="#AFA9EC"/>
+
+<!-- PROJETO -->
+<rect class="bx-p" x="140" y="232" width="400" height="52" rx="8"/>
+<text class="nt-p" x="340" y="251" text-anchor="middle" dominant-baseline="central">Projeto</text>
+<text class="st-p" x="340" y="269" text-anchor="middle" dominant-baseline="central">Nome · prazo · status · membros vinculados</text>
+<!-- novo projeto -->
+<path d="M540 258 L590 258" class="ld"/>
+<rect class="bx-p" x="590" y="242" width="76" height="32" rx="6"/>
+<text class="nt-p" x="628" y="258" text-anchor="middle" dominant-baseline="central" style="font-size:11px">+ Projeto</text>
+<line x1="340" y1="284" x2="340" y2="308" class="ln" stroke="#85B7EB"/>
+
+<!-- DEMANDA (bloco central) -->
+<rect class="bx-d" x="100" y="308" width="480" height="52" rx="8"/>
+<text class="nt-d" x="340" y="327" text-anchor="middle" dominant-baseline="central">Demanda</text>
+<text class="st-d" x="340" y="345" text-anchor="middle" dominant-baseline="central">Criada dentro do projeto · tipo · prioridade · status</text>
+
+<!-- fork demanda → 3 sub-blocos -->
+<path d="M340 360 L340 380 L174 380 L174 392" fill="none" stroke="#EF9F27" stroke-width="0.8" marker-end="url(#arr)"/>
+<path d="M340 360 L340 380 L340 392" fill="none" stroke="#EF9F27" stroke-width="0.8" marker-end="url(#arr)"/>
+<path d="M340 360 L340 380 L506 380 L506 392" fill="none" stroke="#EF9F27" stroke-width="0.8" marker-end="url(#arr)"/>
+
+<!-- sub-bloco: conteúdo -->
+<rect class="bx-d" x="90" y="392" width="164" height="68" rx="8"/>
+<text class="nt-d" x="172" y="414" text-anchor="middle" dominant-baseline="central">Conteúdo</text>
+<text class="st-d" x="172" y="430" text-anchor="middle" dominant-baseline="central">Descrição, imagens</text>
+<text class="st-d" x="172" y="446" text-anchor="middle" dominant-baseline="central">links externos</text>
+
+<!-- sub-bloco: links ferramentas -->
+<rect class="bx-a" x="258" y="392" width="164" height="68" rx="8"/>
+<text class="nt-a" x="340" y="414" text-anchor="middle" dominant-baseline="central">Links de ferramentas</text>
+<text class="st-d" x="340" y="430" text-anchor="middle" dominant-baseline="central">Jira · Linear · Trello</text>
+<text class="st-d" x="340" y="446" text-anchor="middle" dominant-baseline="central">GitHub · Asana · etc.</text>
+
+<!-- sub-bloco: timer -->
+<rect class="bx-t" x="424" y="392" width="164" height="68" rx="8"/>
+<text class="nt-t" x="506" y="414" text-anchor="middle" dominant-baseline="central">Registro de tempo</text>
+<text class="st-t" x="506" y="430" text-anchor="middle" dominant-baseline="central">Timer por demanda</text>
+<text class="st-t" x="506" y="446" text-anchor="middle" dominant-baseline="central">ou lançamento manual</text>
+
+<!-- merge sub-blocos → seta para baixo -->
+<path d="M172 460 L172 490 L340 490" fill="none" stroke="#EF9F27" stroke-width="0.8" stroke-dasharray="3 3"/>
+<path d="M340 460 L340 490" fill="none" stroke="#EF9F27" stroke-width="0.8" stroke-dasharray="3 3"/>
+<path d="M506 460 L506 490 L340 490" fill="none" stroke="#EF9F27" stroke-width="0.8" stroke-dasharray="3 3"/>
+<line x1="340" y1="490" x2="340" y2="514" class="ln" stroke="#EF9F27"/>
+
+<!-- REGISTRO DIÁRIO -->
+<rect class="bx-r" x="100" y="514" width="480" height="52" rx="8"/>
+<text class="nt-r" x="340" y="533" text-anchor="middle" dominant-baseline="central">Registro diário</text>
+<text class="st-r" x="340" y="551" text-anchor="middle" dominant-baseline="central">Data · texto livre · imagens · referencia N demandas</text>
+
+<!-- seta de referência (demanda ← registro) — lateral esquerda -->
+<path d="M100 540 L60 540 L60 334 L100 334" fill="none" stroke="#D85A30" stroke-width="0.8" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+<text style="font-family:system-ui,sans-serif;font-size:10px;fill:#993C1D;" x="56" y="438" text-anchor="middle" dominant-baseline="central" transform="rotate(-90,56,438)">referencia demanda</text>
+
+<!-- sub: vincular demanda ao registro -->
+<line x1="340" y1="566" x2="340" y2="590" class="ln" stroke="#F0997B"/>
+<rect class="bx-r" x="190" y="590" width="300" height="48" rx="8"/>
+<text class="nt-r" x="340" y="608" text-anchor="middle" dominant-baseline="central">Vincular demandas ao dia</text>
+<text class="st-r" x="340" y="625" text-anchor="middle" dominant-baseline="central">Selecionar de lista do projeto ativo</text>
+
+<line x1="340" y1="638" x2="340" y2="660" class="ln" stroke="#F0997B"/>
+
+<!-- HISTÓRICO SEMANAL -->
+<rect class="bx-r" x="190" y="660" width="300" height="48" rx="8"/>
+<text class="nt-r" x="340" y="678" text-anchor="middle" dominant-baseline="central">Histórico semanal</text>
+<text class="st-r" x="340" y="696" text-anchor="middle" dominant-baseline="central">Filtrar por empresa e período</text>
+
+<line x1="340" y1="708" x2="340" y2="732" class="ln" stroke="#97C459"/>
+
+<!-- RELATÓRIO PDF -->
+<rect class="bx-g" x="120" y="732" width="440" height="52" rx="8"/>
+<text class="nt-g" x="340" y="751" text-anchor="middle" dominant-baseline="central">Relatório semanal PDF</text>
+<text class="st-g" x="340" y="769" text-anchor="middle" dominant-baseline="central">Capa · projetos · demandas · tempo · registros · imagens</text>
+
+<!-- estrutura do PDF (fan-out) -->
+<path d="M340 784 L340 802 L200 802 L200 814" fill="none" stroke="#97C459" stroke-width="0.8" marker-end="url(#arr)"/>
+<path d="M340 784 L340 814" fill="none" stroke="#97C459" stroke-width="0.8" marker-end="url(#arr)"/>
+<path d="M340 784 L340 802 L480 802 L480 814" fill="none" stroke="#97C459" stroke-width="0.8" marker-end="url(#arr)"/>
+
+<rect class="bx-g" x="110" y="814" width="175" height="44" rx="6"/>
+<text class="nt-g" x="197" y="833" text-anchor="middle" dominant-baseline="central" style="font-size:12px">Capa + totais</text>
+<text class="st-g" x="197" y="848" text-anchor="middle" dominant-baseline="central">Empresa, horas, demandas</text>
+
+<rect class="bx-g" x="253" y="814" width="175" height="44" rx="6"/>
+<text class="nt-g" x="340" y="833" text-anchor="middle" dominant-baseline="central" style="font-size:12px">Seções por projeto</text>
+<text class="st-g" x="340" y="848" text-anchor="middle" dominant-baseline="central">Demandas, links, imgs</text>
+
+<rect class="bx-g" x="393" y="814" width="175" height="44" rx="6"/>
+<text class="nt-g" x="480" y="833" text-anchor="middle" dominant-baseline="central" style="font-size:12px">Registros diários</text>
+<text class="st-g" x="480" y="848" text-anchor="middle" dominant-baseline="central">Notas e evidências</text>
+
+<!-- LEGENDA -->
+<rect class="bx-e" x="40" y="900" width="10" height="10" rx="2"/>
+<text style="font-family:system-ui,sans-serif;font-size:11px;fill:#444441;" x="56" y="909">Empresa</text>
+<rect class="bx-p" x="115" y="900" width="10" height="10" rx="2"/>
+<text style="font-family:system-ui,sans-serif;font-size:11px;fill:#444441;" x="131" y="909">Projeto</text>
+<rect class="bx-d" x="185" y="900" width="10" height="10" rx="2"/>
+<text style="font-family:system-ui,sans-serif;font-size:11px;fill:#444441;" x="201" y="909">Demanda</text>
+<rect class="bx-r" x="268" y="900" width="10" height="10" rx="2"/>
+<text style="font-family:system-ui,sans-serif;font-size:11px;fill:#444441;" x="284" y="909">Registro diário</text>
+<rect class="bx-g" x="371" y="900" width="10" height="10" rx="2"/>
+<text style="font-family:system-ui,sans-serif;font-size:11px;fill:#444441;" x="387" y="909">Relatório PDF</text>
+<line x1="456" y1="904" x2="490" y2="904" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 3"/>
+<text style="font-family:system-ui,sans-serif;font-size:11px;fill:#888780;" x="496" y="908">Referência</text>
+</svg>
+</div>
+<p style="font-size:12px;color:var(--text-t);text-align:center;margin-bottom:0;">Figura 1 — Fluxo hierárquico WorkLog. A seta tracejada lateral indica que o registro diário <em>referencia</em> demandas, não as cria.</p>
+
+<!-- ═══════════════════════════════════════
+     MÓDULOS E ENTIDADES
+════════════════════════════════════════ -->
+<h2 id="modulos">Módulos e entidades</h2>
+
+<div class="grid-2">
+  <div class="card">
+    <h3 style="color:var(--purple-800)">Empresa</h3>
+    <table><tr><th>Campo</th><th>Tipo</th></tr>
+    <tr><td><code>id</code></td><td>uuid PK</td></tr>
+    <tr><td><code>nome</code></td><td>string obrigatório</td></tr>
+    <tr><td><code>cnpj</code></td><td>string opcional</td></tr>
+    <tr><td><code>logo_url</code></td><td>string</td></tr>
+    <tr><td><code>cor_destaque</code></td><td>hex color</td></tr>
+    <tr><td><code>status</code></td><td>ativo | arquivado</td></tr>
+    <tr><td><code>created_at</code></td><td>timestamp</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h3 style="color:var(--blue-800)">Projeto</h3>
+    <table><tr><th>Campo</th><th>Tipo</th></tr>
+    <tr><td><code>id</code></td><td>uuid PK</td></tr>
+    <tr><td><code>empresa_id</code></td><td>FK → Empresa</td></tr>
+    <tr><td><code>nome</code></td><td>string obrigatório</td></tr>
+    <tr><td><code>descricao</code></td><td>text</td></tr>
+    <tr><td><code>status</code></td><td>ativo | pausado | concluído | cancelado</td></tr>
+    <tr><td><code>data_inicio</code></td><td>date</td></tr>
+    <tr><td><code>data_fim</code></td><td>date nullable</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h3 style="color:var(--amber-800)">Demanda</h3>
+    <table><tr><th>Campo</th><th>Tipo</th></tr>
+    <tr><td><code>id</code></td><td>uuid PK</td></tr>
+    <tr><td><code>projeto_id</code></td><td>FK → Projeto (obrigatório)</td></tr>
+    <tr><td><code>titulo</code></td><td>string obrigatório</td></tr>
+    <tr><td><code>tipo</code></td><td>tarefa | reuniao | alinhamento</td></tr>
+    <tr><td><code>prioridade</code></td><td>baixa | média | alta | urgente</td></tr>
+    <tr><td><code>status</code></td><td>backlog | andamento | revisão | concluída | cancelada</td></tr>
+    <tr><td><code>descricao</code></td><td>text rico</td></tr>
+    <tr><td><code>created_at</code></td><td>timestamp</td></tr>
+    </table>
+    <p class="inline-note">Filhos: <code>DemandaLink[]</code> · <code>DemandaImagem[]</code> · <code>RegistroTempo[]</code></p>
+  </div>
+  <div class="card">
+    <h3 style="color:var(--coral-800)">Registro diário</h3>
+    <table><tr><th>Campo</th><th>Tipo</th></tr>
+    <tr><td><code>id</code></td><td>uuid PK</td></tr>
+    <tr><td><code>empresa_id</code></td><td>FK → Empresa</td></tr>
+    <tr><td><code>data</code></td><td>date obrigatório</td></tr>
+    <tr><td><code>texto</code></td><td>text livre</td></tr>
+    <tr><td><code>created_at</code></td><td>timestamp</td></tr>
+    </table>
+    <p class="inline-note">Vínculos: <code>DiarioDemanda[]</code> (N:N com Demanda) · <code>DiarioImagem[]</code></p>
+    <div class="rule rule-amber" style="margin-top:12px;font-size:13px;">Não tem <code>projeto_id</code>. Pertence à empresa. As demandas referenciadas já carregam o projeto.</div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>Tabelas auxiliares</h3>
+  <table>
+    <tr><th>Tabela</th><th>Campos principais</th><th>Relação</th></tr>
+    <tr><td><code>MembroProjeto</code></td><td>membro_id, projeto_id, papel</td><td>N:N Membro × Projeto</td></tr>
+    <tr><td><code>DemandaLink</code></td><td>id, demanda_id, url, label, ferramenta (jira|linear|trello|github|asana|clickup|figma|notion|outro)</td><td>N links por demanda</td></tr>
+    <tr><td><code>DemandaImagem</code></td><td>id, demanda_id, arquivo, legenda</td><td>N imagens por demanda</td></tr>
+    <tr><td><code>RegistroTempo</code></td><td>id, demanda_id, data, duracao_min, nota, tipo (timer|manual)</td><td>N registros por demanda</td></tr>
+    <tr><td><code>DiarioDemanda</code></td><td>diario_id, demanda_id</td><td>N:N — registro cita demanda</td></tr>
+    <tr><td><code>DiarioImagem</code></td><td>id, diario_id, arquivo, legenda</td><td>N imagens por registro</td></tr>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════════
+     REQUISITOS FUNCIONAIS
+════════════════════════════════════════ -->
+<h2 id="requisitos">Requisitos funcionais</h2>
+
+<h3>RF-01 — Empresa</h3>
+<div class="card"><table>
+  <tr><th>ID</th><th>Descrição</th><th>Prior.</th></tr>
+  <tr><td>RF-01.1</td><td>CRUD completo de empresa com nome, CNPJ, logo, cor de destaque</td><td><span class="badge b-purple">Alta</span></td></tr>
+  <tr><td>RF-01.2</td><td>Troca de empresa explícita — indicador visual da empresa ativa em todas as telas</td><td><span class="badge b-purple">Alta</span></td></tr>
+  <tr><td>RF-01.3</td><td>Arquivar empresa (sem exclusão de dados)</td><td><span class="badge b-gray">Média</span></td></tr>
+</table></div>
+
+<h3>RF-02 — Projeto</h3>
+<div class="card"><table>
+  <tr><th>ID</th><th>Descrição</th><th>Prior.</th></tr>
+  <tr><td>RF-02.1</td><td>Criar projeto dentro de uma empresa com nome, descrição, datas e status</td><td><span class="badge b-purple">Alta</span></td></tr>
+  <tr><td>RF-02.2</td><td>Vincular membros ao projeto com papel definido</td><td><span class="badge b-gray">Média</span></td></tr>
+  <tr><td>RF-02.3</td><td>Listar projetos da empresa com filtro de status</td><td><span class="badge b-purple">Alta</span></td></tr>
+</table></div>
+
+<h3>RF-03 — Demanda (vinculada ao projeto)</h3>
+<div class="card"><table>
+  <tr><th>ID</th><th>Descrição</th><th>Prior.</th></tr>
+  <tr><td>RF-03.1</td><td>Criar demanda dentro de um projeto com título, tipo, prioridade e status</td><td><span class="badge b-purple">Alta</span></td></tr>
+  <tr><td>RF-03.2</td><td>Adicionar descrição rica, imagens e links externos</td><td><span class="badge b-purple">Alta</span></td></tr>
+  <tr><td>RF-03.3</td><td>Links de ferramentas ágeis: cada link tem URL, label e tipo detectado automaticamente (Jira, Linear, Trello, GitHub, Asana, ClickUp, Figma, Notion, Outro)</td><td><span class="badge b-purple">Alta</span></td></tr>
+  <tr><td>RF-03.4</td><td>Detecção automática de ferramenta ao colar URL (por padrão de domínio/path)</td><td><span class="badge b-gray">Média</span></td></tr>
+  <tr><td>RF-03.5</td><td>Timer por demanda — iniciar, pausar, parar — armazena RegistroTempo</td><td><span class="badge b-purple">Alta</span></td></tr>
+  <tr><td>RF-03.6</td><td>Lançamento manual de tempo com data, duração e nota</td><td><span class="badge b-purple">Alta</span></td></tr>
+  <tr><td>RF-03.7</td><td>Visualizar total de horas por demanda e por projeto</td><td><span class="badge b-purple">Alta</span></td></tr>
+  <tr><td>RF-03.8</td><td>Alterar status da demanda com histórico de mudanças</td><td><span class="badge b-gray">Média</span></td></tr>
+</table></div>
+
+<h3>RF-04 — Registro diário (referencia demandas)</h3>
+<div class="card"><table>
+  <tr><th>ID</th><th>Descrição</th><th>Prior.</th></tr>
+  <tr><td>RF-04.1</td><td>Criar registro diário com data e empresa ativa</td><td><span class="badge b-purple">Alta</span></td></tr>
+  <tr><td>RF-04.2</td><td>Referenciar N demandas no registro — seleção a partir das demandas ativas dos projetos da empresa</td><td><span class="badge b-purple">Alta</span></td></tr>
+  <tr><td>RF-04.3</td><td>Adicionar nota livre e imagens/screenshots ao registro</td><td><span class="badge b-purple">Alta</span></td></tr>
+  <tr><td>RF-04.4</td><td>Visualizar histórico de registros agrupado por semana</td><td><span class="badge b-purple">Alta</span></td></tr>
+  <tr><td>RF-04.5</td><td>No registro, exibir dados da demanda referenciada (projeto, status, tipo)</td><td><span class="badge b-gray">Média</span></td></tr>
+</table></div>
+
+<h3>RF-05 — Relatório PDF</h3>
+<div class="card"><table>
+  <tr><th>ID</th><th>Descrição</th><th>Prior.</th></tr>
+  <tr><td>RF-05.1</td><td>Gerar PDF filtrando por empresa + período (semana padrão, customizável)</td><td><span class="badge b-purple">Alta</span></td></tr>
+  <tr><td>RF-05.2</td><td>Capa: logo, nome empresa, período, total de horas, total de demandas</td><td><span class="badge b-purple">Alta</span></td></tr>
+  <tr><td>RF-05.3</td><td>Seção por projeto: lista de demandas com título, tipo, status, descrição, links (URLs), imagens</td><td><span class="badge b-purple">Alta</span></td></tr>
+  <tr><td>RF-05.4</td><td>Seção de registros diários: linha do tempo com notas e evidências visuais</td><td><span class="badge b-purple">Alta</span></td></tr>
+  <tr><td>RF-05.5</td><td>Tabela consolidada de tempo: demanda × horas · subtotal por projeto · total geral</td><td><span class="badge b-gray">Média</span></td></tr>
+  <tr><td>RF-05.6</td><td>Preview antes de exportar · download como .pdf</td><td><span class="badge b-gray">Média</span></td></tr>
+</table></div>
+
+<!-- ═══════════════════════════════════════
+     REGRAS DE NEGÓCIO
+════════════════════════════════════════ -->
+<h2 id="regras">Regras de negócio</h2>
+
+<h3>Isolamento de dados</h3>
+<div class="rule">RN-01 — Todo objeto (projeto, demanda, registro, membro) pertence a exatamente uma empresa. Nenhum dado é compartilhado entre empresas.</div>
+<div class="rule">RN-02 — A troca de empresa deve ser explícita e confirmada. Nunca ocorre automaticamente.</div>
+<div class="rule rule-red">RN-03 — Excluir empresa exclui todos os dados em cascata. Exige confirmação com digitação do nome.</div>
+
+<h3>Hierarquia Empresa → Projeto → Demanda</h3>
+<div class="rule">RN-04 — Uma demanda deve obrigatoriamente pertencer a um projeto. Não existe demanda "solta" na empresa.</div>
+<div class="rule">RN-05 — Não é possível mover uma demanda para um projeto de outra empresa.</div>
+<div class="rule rule-amber">RN-06 — O tipo da demanda (tarefa / reunião / alinhamento) é imutável após criação. Para mudar: criar nova demanda.</div>
+
+<h3>Registro diário referencia demandas</h3>
+<div class="rule">RN-07 — O registro diário pertence à empresa ativa. Ele pode referenciar demandas de qualquer projeto dessa empresa.</div>
+<div class="rule rule-amber">RN-08 — O registro diário <strong>não cria</strong> demandas. Ele apenas vincula demandas existentes. A lista de seleção mostra somente demandas da empresa ativa.</div>
+<div class="rule">RN-09 — Um registro deve ter ao menos: texto livre OU uma demanda referenciada OU uma imagem. Registro vazio não é salvo.</div>
+<div class="rule">RN-10 — Uma demanda pode aparecer em múltiplos registros diários. Um registro pode referenciar múltiplas demandas.</div>
+
+<h3>Timer e tempo</h3>
+<div class="rule">RN-11 — Só pode haver um timer ativo por vez. Iniciar novo timer encerra o anterior automaticamente com aviso.</div>
+<div class="rule">RN-12 — Demanda com status <code>concluída</code> ou <code>cancelada</code> não aceita novos lançamentos de tempo sem reabertura explícita.</div>
+<div class="rule">RN-13 — Lançamento manual: data obrigatória, duração mínima de 1 minuto.</div>
+
+<h3>Links de ferramentas</h3>
+<div class="rule">RN-14 — Ao colar uma URL no campo de link, o sistema tenta detectar a ferramenta automaticamente pelo padrão de domínio. O usuário pode corrigir manualmente.</div>
+<div class="rule">RN-15 — Uma demanda pode ter links ilimitados. Cada link tem: URL, label, ferramenta.</div>
+
+<h3>PDF</h3>
+<div class="rule">RN-16 — O PDF nunca mistura dados de empresas diferentes.</div>
+<div class="rule">RN-17 — Imagens são redimensionadas para max 800px de largura. PDF limitado a 10 MB.</div>
+<div class="rule">RN-18 — Links no PDF aparecem como texto clicável com URL completa.</div>
+
+<!-- ═══════════════════════════════════════
+     IDENTIDADE VISUAL
+════════════════════════════════════════ -->
+<h2 id="identidade">Identidade visual e design tokens</h2>
+<p class="intro">Dark mode é o modo primário. O sistema deve ter aparência refinada em fundo escuro — não apenas um light mode invertido.</p>
+
+<div class="card">
+  <h3>Paleta — dark mode (primária)</h3>
+  <table>
+    <tr><th>Token</th><th>Valor dark</th><th>Uso</th></tr>
+    <tr><td><code>--bg-base</code></td><td><span class="color-swatch" style="background:#0E0E0C;border-color:#333"></span><code>#0E0E0C</code></td><td>Fundo da aplicação</td></tr>
+    <tr><td><code>--bg-surface</code></td><td><span class="color-swatch" style="background:#161614;border-color:#333"></span><code>#161614</code></td><td>Cards e painéis</td></tr>
+    <tr><td><code>--bg-elevated</code></td><td><span class="color-swatch" style="background:#1E1E1B;border-color:#333"></span><code>#1E1E1B</code></td><td>Modais, dropdowns</td></tr>
+    <tr><td><code>--bg-input</code></td><td><span class="color-swatch" style="background:#252521;border-color:#333"></span><code>#252521</code></td><td>Campos de formulário</td></tr>
+    <tr><td><code>--border</code></td><td><span class="color-swatch" style="background:#2E2E2B;border-color:#333"></span><code>#2E2E2B</code></td><td>Bordas padrão</td></tr>
+    <tr><td><code>--border-hover</code></td><td><span class="color-swatch" style="background:#3D3D39;border-color:#333"></span><code>#3D3D39</code></td><td>Hover / foco</td></tr>
+    <tr><td><code>--text-primary</code></td><td><span class="color-swatch" style="background:#E8E6DE;border-color:#555"></span><code>#E8E6DE</code></td><td>Texto principal</td></tr>
+    <tr><td><code>--text-secondary</code></td><td><span class="color-swatch" style="background:#9C9A92;border-color:#555"></span><code>#9C9A92</code></td><td>Labels e sublabels</td></tr>
+    <tr><td><code>--text-muted</code></td><td><span class="color-swatch" style="background:#66645E;border-color:#555"></span><code>#66645E</code></td><td>Placeholders, hints</td></tr>
+    <tr><td><code>--accent</code></td><td><span class="color-swatch" style="background:#7F77DD;border-color:#555"></span><code>#7F77DD</code></td><td>Ações primárias, foco</td></tr>
+    <tr><td><code>--accent-hover</code></td><td><span class="color-swatch" style="background:#AFA9EC;border-color:#555"></span><code>#AFA9EC</code></td><td>Hover de ações</td></tr>
+  </table>
+</div>
+
+<div class="card">
+  <h3>Cores semânticas (dark)</h3>
+  <table>
+    <tr><th>Propósito</th><th>Fill</th><th>Text / border</th><th>Uso</th></tr>
+    <tr><td>Empresa / nav</td><td><span class="color-swatch" style="background:#26215C;border-color:#534AB7"></span><code>#26215C</code></td><td><code>#CECBF6</code></td><td>Workspace, seletor de empresa</td></tr>
+    <tr><td>Projeto</td><td><span class="color-swatch" style="background:#042C53;border-color:#185FA5"></span><code>#042C53</code></td><td><code>#B5D4F4</code></td><td>Cards de projeto</td></tr>
+    <tr><td>Demanda / tarefa</td><td><span class="color-swatch" style="background:#412402;border-color:#854F0B"></span><code>#412402</code></td><td><code>#FAC775</code></td><td>Cards de demanda</td></tr>
+    <tr><td>Registro diário</td><td><span class="color-swatch" style="background:#4A1B0C;border-color:#993C1D"></span><code>#4A1B0C</code></td><td><code>#F5C4B3</code></td><td>Entradas de log</td></tr>
+    <tr><td>Tempo / timer</td><td><span class="color-swatch" style="background:#04342C;border-color:#0F6E56"></span><code>#04342C</code></td><td><code>#9FE1CB</code></td><td>Widget de timer, horas</td></tr>
+    <tr><td>PDF / export</td><td><span class="color-swatch" style="background:#173404;border-color:#3B6D11"></span><code>#173404</code></td><td><code>#C0DD97</code></td><td>Botão exportar, relatório</td></tr>
+    <tr><td>Sucesso</td><td><span class="color-swatch" style="background:#0F6E56;border-color:#5DCAA5"></span><code>#0F6E56</code></td><td><code>#9FE1CB</code></td><td>Status concluído</td></tr>
+    <tr><td>Perigo</td><td><span class="color-swatch" style="background:#791F1F;border-color:#E24B4A"></span><code>#791F1F</code></td><td><code>#F7C1C1</code></td><td>Cancelado, excluir</td></tr>
+  </table>
+</div>
+
+<div class="grid-2">
+  <div class="card">
+    <h3>Tipografia</h3>
+    <table>
+      <tr><th>Elemento</th><th>Spec</th></tr>
+      <tr><td>Display / h1</td><td>28px · 500 · ls -0.03em</td></tr>
+      <tr><td>Heading h2</td><td>20px · 500 · ls -0.01em</td></tr>
+      <tr><td>Heading h3</td><td>16px · 500</td></tr>
+      <tr><td>Body</td><td>14px · 400 · lh 1.6</td></tr>
+      <tr><td>Label / badge</td><td>12px · 500 · ls 0.03em</td></tr>
+      <tr><td>Caption / hint</td><td>11px · 400</td></tr>
+      <tr><td>Monospace (IDs, código)</td><td>13px · ui-monospace</td></tr>
+    </table>
+    <p class="inline-note">Fonte sugerida: <code>Geist</code> ou <code>Inter</code> (system-ui fallback).</p>
+  </div>
+  <div class="card">
+    <h3>Espaçamento e raios</h3>
+    <table>
+      <tr><th>Token</th><th>Valor</th></tr>
+      <tr><td><code>--radius-sm</code></td><td>6px</td></tr>
+      <tr><td><code>--radius-md</code></td><td>8px</td></tr>
+      <tr><td><code>--radius-lg</code></td><td>12px</td></tr>
+      <tr><td><code>--radius-xl</code></td><td>16px</td></tr>
+      <tr><td><code>--space-base</code></td><td>8px (múltiplos: 4,8,12,16,24,32,48)</td></tr>
+      <tr><td>Borda padrão</td><td>0.5px solid <code>var(--border)</code></td></tr>
+      <tr><td>Sidebar width</td><td>220px colapsável</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     STACK TÉCNICA
+════════════════════════════════════════ -->
+<h2 id="stack">Stack técnica recomendada</h2>
+
+<div class="card">
+  <table>
+    <tr><th>Camada</th><th>Tecnologia</th><th>Justificativa</th></tr>
+    <tr><td>Framework</td><td><code>React 18 + Vite</code></td><td>Rápido para prototipar, sem magia extra</td></tr>
+    <tr><td>Linguagem</td><td><code>TypeScript</code></td><td>Tipos ajudam o Claude Code gerar código correto</td></tr>
+    <tr><td>Estilo</td><td><code>Tailwind CSS v3</code></td><td>Utility-first — prompts mais diretos pro Claude</td></tr>
+    <tr><td>Roteamento</td><td><code>React Router v6</code></td><td>SPA com rotas por empresa/projeto/demanda</td></tr>
+    <tr><td>Estado global</td><td><code>Zustand</code></td><td>Simples, sem boilerplate excessivo</td></tr>
+    <tr><td>Persistência</td><td><code>IndexedDB via Dexie.js</code></td><td>Offline-first, suporta blobs de imagem, até centenas de MB</td></tr>
+    <tr><td>Backup / portabilidade</td><td><code>Export/Import JSON</code></td><td>Arquivo único com toda a hierarquia — backup, migração, multi-device</td></tr>
+    <tr><td>Geração de PDF</td><td><code>@react-pdf/renderer</code></td><td>Componentes React → PDF, suporta imagens</td></tr>
+    <tr><td>Editor de texto</td><td><code>TipTap (ProseMirror)</code></td><td>Rico, extensível, sem dependências pesadas</td></tr>
+    <tr><td>Ícones</td><td><code>Lucide React</code></td><td>Tree-shakeable, consistente com o visual</td></tr>
+    <tr><td>Datas</td><td><code>date-fns</code></td><td>Leve, imutável, sem timezone hell</td></tr>
+    <tr><td>Deploy</td><td><code>Vercel</code></td><td>SPA estático — zero config, CDN global, CI/CD pelo GitHub</td></tr>
+  </table>
+</div>
+
+<div class="card">
+  <h3>Estrutura de pastas recomendada</h3>
+<pre><code>src/
+├── app/                  # Rotas e providers globais
+├── features/
+│   ├── empresas/         # Seletor, CRUD de empresa
+│   ├── projetos/         # Lista, form, membros
+│   ├── demandas/         # Board, card, timer, links
+│   ├── registros/        # Diário, seletor de demandas
+│   ├── relatorio/        # Visualização e exportação PDF
+│   └── backup/           # Export/import JSON
+├── shared/
+│   ├── components/       # Button, Input, Badge, Card...
+│   ├── hooks/            # useTimer, useActiveEmpresa...
+│   └── utils/            # detectTool(url), formatTime...
+├── store/                # Zustand stores por domínio
+└── db/                   # Dexie schema e queries
+vercel.json               # Rewrite de SPA (todas as rotas → index.html)</code></pre>
+</div>
+
+<!-- ═══════════════════════════════════════
+     GUIA DE VIBE CODING
+════════════════════════════════════════ -->
+<h2 id="vibecoding">Guia de vibe coding — Claude Code</h2>
+<p class="intro">Sequência de prompts para construir o WorkLog do zero com Claude Code. Cada bloco é um passo autônomo — execute na ordem e revise antes de continuar.</p>
+
+<h3>Antes de começar</h3>
+<div class="card">
+  <p>Instale o Claude Code e inicie o projeto:</p>
+<pre><code>npm install -g @anthropic-ai/claude-code
+cd ~/projetos
+npm create vite@latest worklog -- --template react-ts
+cd worklog
+npm install
+claude</code></pre>
+  <p class="inline-note">Cole o PRD inteiro no início de cada sessão como contexto. Use <code>CLAUDE.md</code> na raiz do projeto para guardar contexto persistente.</p>
+</div>
+
+<div class="card">
+  <h3>CLAUDE.md — cole este conteúdo na raiz do projeto</h3>
+<pre><code># WorkLog — contexto para Claude Code
+
+## Hierarquia de dados (NUNCA violar)
+Empresa → Projeto → Demanda → RegistroTempo / DemandaLink / DemandaImagem
+Empresa → RegistroDiario → DiarioDemanda (referencia demandas, não cria)
+
+## Stack
+React 18, TypeScript, Vite, Tailwind v3, Zustand, Dexie.js, React Router v6
+
+## Dark mode é primário
+bg-base: #0E0E0C | surface: #161614 | elevated: #1E1E1B
+accent: #7F77DD | text-primary: #E8E6DE | border: #2E2E2B
+
+## Persistência
+- Dexie.js (IndexedDB) para todos os dados — nunca localStorage para objetos complexos
+- localStorage apenas para: empresa ativa (id string), preferências de UI
+- Export/import JSON em src/features/backup/ — único mecanismo de portabilidade entre devices
+
+## Deploy
+- SPA estático no Vercel
+- vercel.json com rewrite { "source": "/(.*)", "destination": "/index.html" }
+- Sem variáveis de ambiente necessárias para a fase 1
+
+## Regras de código
+- Componentes em features/[dominio]/components/
+- Cada feature tem seu próprio store Zustand
+- Sempre TypeScript strict — sem any
+- Demanda sempre tem projeto_id. RegistroDiario sempre tem empresa_id.</code></pre>
+</div>
+
+<h3>Sequência de prompts</h3>
+<div class="vibe-wrap">
+
+  <div class="vibe-step">
+    <div>
+<div class="prompt-box"><p>Configure o projeto base: instale Tailwind v3, Zustand, Dexie, React Router v6, Lucide React e date-fns. Configure o Tailwind com dark mode como padrão (<code>darkMode: 'class'</code> com a classe <code>dark</code> sempre aplicada no <code>html</code>). Crie os design tokens como variáveis CSS conforme o CLAUDE.md. Crie um componente <code>Layout</code> com sidebar de 220px e área de conteúdo principal. A sidebar deve ter: seletor de empresa ativa no topo, navegação por seções (Projetos, Registros, Relatório) e indicador visual da empresa ativa com a cor de destaque dela.</p></div>
+    </div>
+  </div>
+
+  <div class="vibe-step">
+    <div>
+<div class="prompt-box"><p>Crie o schema Dexie completo em <code>src/db/schema.ts</code> com as tabelas: <code>empresas</code>, <code>projetos</code>, <code>membros</code>, <code>membroProjeto</code>, <code>demandas</code>, <code>demandaLinks</code>, <code>demandaImagens</code>, <code>registrosTempo</code>, <code>registrosDiarios</code>, <code>diarioDemandas</code>, <code>diarioImagens</code>. Todos os campos devem ser TypeScript tipados. Crie também as queries básicas de cada tabela como hooks (<code>useEmpresas</code>, <code>useProjetos</code>, <code>useDemandas</code>, <code>useRegistros</code>). Importante: <code>demandas</code> tem <code>projeto_id</code> obrigatório. <code>registrosDiarios</code> tem <code>empresa_id</code> mas não <code>projeto_id</code>.</p></div>
+    </div>
+  </div>
+
+  <div class="vibe-step">
+    <div>
+<div class="prompt-box"><p>Crie o módulo de empresas em <code>src/features/empresas/</code>. Deve ter: tela de seleção/listagem de empresas (cards com logo, nome e cor de destaque), modal de criação/edição com campos nome, CNPJ, cor de destaque (color picker) e logo (upload de imagem armazenado como base64 no Dexie). Um store Zustand <code>useEmpresaStore</code> com <code>empresaAtiva</code> persistido em localStorage. Ao selecionar empresa, toda a navegação deve refletir a empresa ativa. Empresas arquivadas ficam ocultas por padrão com opção de mostrar.</p></div>
+    </div>
+  </div>
+
+  <div class="vibe-step">
+    <div>
+<div class="prompt-box"><p>Crie o módulo de projetos em <code>src/features/projetos/</code>. Lista de projetos filtrada pela empresa ativa com cards mostrando nome, status, quantidade de demandas e total de horas. Form de criação com nome, descrição, data início, data fim e status. Ao clicar num projeto, abre a view do projeto com tabs: Demandas | Membros | Sobre. Status enum: <code>ativo | pausado | concluido | cancelado</code> com badges coloridos para cada estado.</p></div>
+    </div>
+  </div>
+
+  <div class="vibe-step">
+    <div>
+<div class="prompt-box"><p>Crie o módulo de demandas em <code>src/features/demandas/</code>. Uma demanda pertence a um projeto. Crie: lista de demandas dentro da view do projeto, card de demanda com título, tipo (tarefa/reunião/alinhamento), prioridade, status e total de horas. Formulário de criação/edição com todos os campos. Campo de descrição usando TipTap. Seção de imagens com upload e preview. Seção de links de ferramentas com detecção automática de tipo ao colar URL — implemente a função <code>detectTool(url: string)</code> que retorna a ferramenta baseado em padrões de URL para Jira, Linear, Trello, GitHub, Asana, ClickUp, Figma e Notion. Exibir ícone colorido por ferramenta.</p></div>
+    </div>
+  </div>
+
+  <div class="vibe-step">
+    <div>
+<div class="prompt-box"><p>Crie o componente de timer em <code>src/features/demandas/components/Timer.tsx</code>. Deve ter: botão de iniciar/pausar/parar com ícones Lucide, contador em tempo real (hh:mm:ss), ao parar cria um <code>RegistroTempo</code> com tipo <code>timer</code>. Regra crítica: só um timer ativo por vez — ao iniciar novo timer, verificar se há outro ativo e mostrar confirmação de encerramento. Também crie o formulário de lançamento manual com data, horas e minutos (inputs separados) e nota opcional. Abaixo do timer, listar todos os RegistroTempo da demanda com data, duração formatada e nota, com opção de excluir. Exibir total acumulado em destaque.</p></div>
+    </div>
+  </div>
+
+  <div class="vibe-step">
+    <div>
+<div class="prompt-box"><p>Crie o módulo de registros diários em <code>src/features/registros/</code>. Tela principal: calendário/lista da semana atual com dias tendo entradas marcadas. Ao clicar num dia, abre o registro daquele dia (cria se não existir). O registro tem: texto livre (TipTap), seção para referenciar demandas e seção de imagens. A seleção de demandas deve mostrar um selector com busca, agrupado por projeto, listando apenas demandas da empresa ativa com status diferente de cancelado. Ao adicionar uma demanda ao registro, exibir um chip com nome da demanda, projeto e status — não duplicar dados, apenas a referência. Implementar como <code>DiarioDemanda</code> no Dexie.</p></div>
+    </div>
+  </div>
+
+  <div class="vibe-step">
+    <div>
+<div class="prompt-box"><p>Crie o módulo de relatório em <code>src/features/relatorio/</code>. Tela de configuração com seletor de empresa (já ativa por padrão) e seletor de período (semana atual como padrão, com opção custom). Preview do relatório renderizado na tela antes de exportar, seguindo a estrutura: capa com logo e totais, seções por projeto com demandas detalhadas (título, tipo, status, descrição, links clicáveis, imagens), seção de registros diários com notas e evidências, tabela de tempo consolidada. Botão de exportar PDF usando <code>@react-pdf/renderer</code> reproduzindo o mesmo layout do preview. O PDF deve usar as cores da empresa (cor de destaque) na capa e headers.</p></div>
+    </div>
+  </div>
+
+  <div class="vibe-step">
+    <div>
+<div class="prompt-box"><p>Agora faça o polimento final de UI/UX: (1) confirme que dark mode está consistente em todas as telas usando as variáveis CSS do CLAUDE.md; (2) adicione estados vazios (empty states) com ilustração simples e CTA em todas as listas; (3) adicione toasts de feedback para ações (criado, salvo, excluído, timer encerrado); (4) garanta que a sidebar mostra sempre a empresa ativa com badge de cor de destaque; (5) adicione atalho de teclado <code>N</code> para nova demanda e <code>R</code> para novo registro quando fora de input; (6) revise responsividade para telas de 1024px a 1440px.</p></div>
+    </div>
+  </div>
+
+</div>
+
+  <div class="vibe-step">
+    <div>
+<div class="prompt-box"><p>Crie o módulo de backup em <code>src/features/backup/</code> com duas funções principais. <strong>Export:</strong> ler todas as tabelas Dexie na ordem correta (empresas → projetos → membros → membroProjeto → demandas → demandaLinks → demandaImagens → registrosTempo → registrosDiarios → diarioDemandas → diarioImagens), montar um objeto JSON com campo <code>version: "1.0"</code>, <code>exported_at</code> e <code>data</code> contendo o array de cada tabela. Imagens ficam como base64 já armazenado. Fazer download do arquivo como <code>worklog-backup-YYYY-MM-DD.json</code>. <strong>Import:</strong> ler o arquivo JSON, validar o campo <code>version</code>, exibir um resumo do que será importado (N empresas, N projetos, N demandas), perguntar se deve substituir tudo ou mesclar (modo substituir: limpar todas as tabelas antes; modo mesclar: usar <code>bulkPut</code> para upsert por id). Mostrar progresso e confirmar sucesso. Adicionar botões de Export e Import na sidebar, na seção de configurações.</p></div>
+    </div>
+  </div>
+
+  <div class="vibe-step">
+    <div>
+<div class="prompt-box"><p>Prepare o projeto para deploy no Vercel. Faça as seguintes tarefas: (1) crie o arquivo <code>vercel.json</code> na raiz com o rewrite de SPA para que todas as rotas apontem para <code>index.html</code>; (2) verifique se o <code>vite.config.ts</code> está com <code>base: '/'</code>; (3) no <code>package.json</code> confirme que o script <code>build</code> existe e gera a pasta <code>dist/</code>; (4) crie um arquivo <code>.env.example</code> vazio com comentário explicando que o projeto não precisa de variáveis de ambiente na fase 1; (5) adicione um <code>README.md</code> na raiz com: descrição do projeto, instruções de instalação local (<code>npm install && npm run dev</code>), instruções de deploy no Vercel (conectar repositório GitHub, build command <code>npm run build</code>, output directory <code>dist</code>), e nota sobre a estratégia de persistência (IndexedDB local + export JSON para backup).</p></div>
+    </div>
+  </div>
+
+</div>
+
+<h3>Prompts de correção frequente</h3>
+<div class="card">
+  <p style="font-size:14px;margin-bottom:10px;">Use estes prompts quando algo der errado:</p>
+<div class="prompt-box"><p>O registro diário está sendo salvo com <code>projeto_id</code> mas ele não deve ter esse campo — pertence à empresa, não ao projeto. Corrija o schema Dexie, o store e todos os componentes que estejam passando <code>projeto_id</code> para o registro diário.</p></div>
+<div class="prompt-box"><p>O timer está permitindo múltiplos timers ativos. Implemente a verificação global no store Zustand: antes de iniciar qualquer timer, buscar no Dexie por <code>RegistroTempo</code> com <code>tipo = 'timer'</code> e <code>fim = null</code>. Se existir, mostrar modal de confirmação para encerrar o anterior.</p></div>
+<div class="prompt-box"><p>As demandas estão aparecendo no seletor de registro diário mesmo de outras empresas. Corrija o query para filtrar por empresa ativa: buscar projetos da empresa ativa → buscar demandas desses projetos → exibir agrupado por projeto.</p></div>
+<div class="prompt-box"><p>Após import JSON, os dados aparecem duplicados. O import deve usar <code>bulkPut</code> (não <code>bulkAdd</code>) no modo mesclar — o <code>bulkPut</code> faz upsert por id, sobrescrevendo registros existentes em vez de duplicar.</p></div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SEÇÃO DE PERSISTÊNCIA
+════════════════════════════════════════ -->
+<h2 id="persistencia">Persistência, backup e portabilidade</h2>
+<p class="intro">O WorkLog roda como SPA estático — não há servidor nem banco de dados remoto. Toda a persistência é local no browser via IndexedDB. Esta seção explica a estratégia completa e os trade-offs.</p>
+
+<div class="card">
+  <h3>Como os dados ficam armazenados</h3>
+  <table>
+    <tr><th>Mecanismo</th><th>O que guarda</th><th>Limite prático</th></tr>
+    <tr><td><code>IndexedDB</code> via Dexie.js</td><td>Todos os dados: empresas, projetos, demandas, registros, imagens em base64, registros de tempo</td><td>Centenas de MB — anos de uso sem problema</td></tr>
+    <tr><td><code>localStorage</code></td><td>Somente: <code>empresa_ativa_id</code> e preferências de UI (tema, sidebar)</td><td>5 MB — não armazena objetos complexos aqui</td></tr>
+    <tr><td>Arquivo <code>.json</code></td><td>Snapshot completo exportado manualmente — backup, migração entre devices, versionamento</td><td>Depende do volume de imagens — em geral abaixo de 50 MB</td></tr>
+  </table>
+</div>
+
+<div class="card">
+  <h3>Limitação principal e como contornar</h3>
+  <div class="rule rule-amber">Os dados ficam presos no browser daquele dispositivo. Abrir <code>worklog.vercel.app</code> em outro computador ou browser começa com banco vazio.</div>
+  <p style="font-size:14px;margin-top:12px;">A solução é o <strong>ciclo de backup semanal</strong>: ao gerar o relatório PDF toda semana, exportar também o JSON. Guardar no Google Drive, Notion ou Dropbox. Ao trocar de máquina, importar o JSON mais recente.</p>
+  <table style="margin-top:12px;">
+    <tr><th>Situação</th><th>Solução</th></tr>
+    <tr><td>Trocar de computador</td><td>Exportar JSON no computador antigo → importar no novo</td></tr>
+    <tr><td>Limpar dados do browser</td><td>Restaurar pelo último backup JSON</td></tr>
+    <tr><td>Usar em dois devices</td><td>Exportar do principal → importar no secundário (modo somente leitura prático)</td></tr>
+    <tr><td>Corrupção de dados</td><td>Restaurar pelo último backup JSON</td></tr>
+  </table>
+</div>
+
+<div class="card">
+  <h3>Estrutura do arquivo de backup JSON</h3>
+<pre><code>{
+  "version": "1.0",
+  "exported_at": "2026-05-28T10:30:00.000Z",
+  "data": {
+    "empresas": [
+      {
+        "id": "emp_abc123",
+        "nome": "EDGE",
+        "cor_destaque": "#7F77DD",
+        "logo_base64": "data:image/png;base64,...",
+        "status": "ativo"
+      }
+    ],
+    "projetos": [
+      {
+        "id": "proj_xyz",
+        "empresa_id": "emp_abc123",
+        "nome": "FlowMap",
+        "status": "ativo"
+      }
+    ],
+    "demandas": [
+      {
+        "id": "dem_001",
+        "projeto_id": "proj_xyz",
+        "titulo": "Timer de demandas",
+        "tipo": "tarefa",
+        "status": "andamento"
+      }
+    ],
+    "demandaLinks": [...],
+    "demandaImagens": [{ "arquivo_base64": "data:image/png;base64,..." }],
+    "registrosTempo": [...],
+    "registrosDiarios": [
+      {
+        "id": "log_001",
+        "empresa_id": "emp_abc123",
+        "data": "2026-05-28",
+        "texto": "Finalizei o módulo de timer"
+      }
+    ],
+    "diarioDemandas": [
+      { "diario_id": "log_001", "demanda_id": "dem_001" }
+    ],
+    "diarioImagens": [...]
+  }
+}</code></pre>
+  <p class="inline-note">Imagens armazenadas como base64 dentro do JSON. Para backups com muitas imagens, o arquivo pode crescer — considere comprimir antes de arquivar.</p>
+</div>
+
+<div class="card">
+  <h3>Evolução futura da persistência</h3>
+  <table>
+    <tr><th>Fase</th><th>Mecanismo</th><th>Quando considerar</th></tr>
+    <tr><td><span class="badge b-green">Fase 1 — agora</span></td><td>IndexedDB + export/import JSON</td><td>Uso pessoal em um device principal</td></tr>
+    <tr><td><span class="badge b-blue">Fase 2</span></td><td><code>Dexie Cloud</code> — sync end-to-end encriptado, plano free para uso pessoal</td><td>Quando precisar de sync automático entre 2–3 devices</td></tr>
+    <tr><td><span class="badge b-purple">Fase 3</span></td><td>Backend próprio (Supabase + Postgres)</td><td>Se virar produto multi-usuário ou precisar de acesso mobile nativo</td></tr>
+  </table>
+  <p class="inline-note" style="margin-top:10px;">A migração da Fase 1 para a Fase 2 é quase sem código — Dexie Cloud é um wrapper sobre o Dexie.js existente. Da Fase 2 para 3, o schema Dexie vira um schema Postgres com poucas adaptações.</p>
+</div>
+
+<!-- ═══════════════════════════════════════
+     DEPLOY NO VERCEL
+════════════════════════════════════════ -->
+<h2 id="deploy">Deploy no Vercel</h2>
+<p class="intro">O WorkLog é um SPA estático — o Vercel serve o <code>dist/</code> gerado pelo Vite como CDN global. Nenhum servidor, nenhuma variável de ambiente obrigatória na fase 1.</p>
+
+<div class="card">
+  <h3>Passo a passo — primeira vez</h3>
+  <table>
+    <tr><th>#</th><th>Ação</th><th>Detalhe</th></tr>
+    <tr><td>1</td><td>Criar repositório no GitHub</td><td><code>git init &amp;&amp; git remote add origin https://github.com/seu-user/worklog.git</code></td></tr>
+    <tr><td>2</td><td>Commit inicial</td><td><code>git add . &amp;&amp; git commit -m "init" &amp;&amp; git push -u origin main</code></td></tr>
+    <tr><td>3</td><td>Importar no Vercel</td><td>vercel.com/new → Import Git Repository → selecionar <code>worklog</code></td></tr>
+    <tr><td>4</td><td>Configurar build</td><td>Framework: <code>Vite</code> · Build command: <code>npm run build</code> · Output dir: <code>dist</code></td></tr>
+    <tr><td>5</td><td>Deploy</td><td>Vercel faz o build e entrega a URL <code>worklog-xxx.vercel.app</code></td></tr>
+    <tr><td>6</td><td>Domínio customizado (opcional)</td><td>Settings → Domains → adicionar seu domínio</td></tr>
+  </table>
+</div>
+
+<div class="card">
+  <h3>Arquivo <code>vercel.json</code> obrigatório para SPA</h3>
+  <p style="font-size:14px;margin-bottom:10px;">Sem este arquivo, rotas como <code>/empresa/123/projeto/456</code> retornam 404 ao dar refresh, porque o Vercel tenta encontrar um arquivo físico naquele caminho.</p>
+<pre><code>{
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}</code></pre>
+  <p class="inline-note">Coloque este arquivo na raiz do projeto, no mesmo nível de <code>package.json</code>.</p>
+</div>
+
+<div class="card">
+  <h3>CI/CD automático após setup</h3>
+  <p style="font-size:14px;">Depois do primeiro deploy, cada <code>git push</code> na branch <code>main</code> dispara um novo build automaticamente. O fluxo de trabalho fica:</p>
+<pre><code># Desenvolver localmente
+npm run dev
+
+# Quando pronto, subir
+git add .
+git commit -m "feat: módulo de backup JSON"
+git push
+
+# Vercel detecta o push, faz build em ~30s e publica</code></pre>
+  <p class="inline-note">Pull requests geram preview URLs automáticos — útil para testar antes de publicar na <code>main</code>.</p>
+</div>
+
+<div class="card">
+  <h3>O que acontece com os dados ao fazer novo deploy</h3>
+  <div class="rule" style="border-color:var(--green-600);background:var(--green-50);color:var(--green-800);">Nada. Os dados estão no IndexedDB do browser do usuário, não no servidor. Deploy novo serve arquivos JS/CSS novos, mas o banco local não é tocado.</div>
+  <p style="font-size:14px;margin-top:10px;">O único cuidado é com quebras de schema do Dexie: se uma nova versão do código muda a estrutura das tabelas, o Dexie precisa de uma migration (<code>db.version(2).stores(...)</code>). O Claude Code cuida disso se você mencionar "atualizei o schema" no prompt.</p>
+</div>
+
+<!-- ═══════════════════════════════════════
+     ROADMAP
+════════════════════════════════════════ -->
+<h2 id="roadmap">Roadmap de sprints</h2>
+<div class="sprint-grid">
+  <div class="sprint" style="background:var(--purple-50);border:0.5px solid var(--purple-100);">
+    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--purple-800);margin-bottom:8px">Sprint 1</div>
+    <div style="color:var(--purple-800)">Setup + empresas + projetos + schema Dexie. Prompts 1 a 4.</div>
+  </div>
+  <div class="sprint" style="background:var(--amber-50);border:0.5px solid var(--amber-100);">
+    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--amber-800);margin-bottom:8px">Sprint 2</div>
+    <div style="color:var(--amber-800)">Demandas completas: tipos, links de ferramentas, imagens. Prompt 5.</div>
+  </div>
+  <div class="sprint" style="background:var(--teal-50);border:0.5px solid var(--teal-100);">
+    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--teal-800);margin-bottom:8px">Sprint 3</div>
+    <div style="color:var(--teal-800)">Timer + registros diários com referência a demandas. Prompts 6 e 7.</div>
+  </div>
+  <div class="sprint" style="background:var(--green-50);border:0.5px solid var(--green-100);">
+    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--green-800);margin-bottom:8px">Sprint 4</div>
+    <div style="color:var(--green-800)">Relatório PDF + polimento visual. Prompts 8 e 9.</div>
+  </div>
+  <div class="sprint" style="background:var(--blue-50);border:0.5px solid var(--blue-100);">
+    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--blue-800);margin-bottom:8px">Sprint 5</div>
+    <div style="color:var(--blue-800)">Export/import JSON + deploy Vercel + README. Prompts 10 e 11.</div>
+  </div>
+</div>
+
+<h3>Pós-MVP</h3>
+<div class="card">
+  <table>
+    <tr><th>Feature</th><th>Esforço</th></tr>
+    <tr><td>Dashboard com gráficos de horas por semana/mês</td><td><span class="badge b-amber">Médio</span></td></tr>
+    <tr><td>Exportação CSV dos registros de tempo</td><td><span class="badge b-teal">Baixo</span></td></tr>
+    <tr><td>Templates de relatório PDF customizáveis por empresa</td><td><span class="badge b-amber">Médio</span></td></tr>
+    <tr><td>Dexie Cloud — sync automático entre devices sem backend próprio</td><td><span class="badge b-teal">Baixo</span></td></tr>
+    <tr><td>PWA com service worker — funcionar offline mesmo sem internet</td><td><span class="badge b-amber">Médio</span></td></tr>
+    <tr><td>Atalhos de teclado globais (command palette)</td><td><span class="badge b-amber">Médio</span></td></tr>
+    <tr><td>Integração com Google Calendar para reuniões</td><td><span class="badge b-purple">Alto</span></td></tr>
+    <tr><td>Backend Supabase + autenticação (se virar produto multi-usuário)</td><td><span class="badge b-purple">Alto</span></td></tr>
+  </table>
+</div>
+
+<p style="margin-top:56px;font-size:12px;color:var(--text-t);border-top:0.5px solid var(--border);padding-top:16px;">WorkLog PRD v1.2 · Atualizado maio 2026 · Adicionado: persistência IndexedDB, export/import JSON, deploy Vercel</p>
+</body>
+</html>
