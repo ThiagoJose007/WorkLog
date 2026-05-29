@@ -2,6 +2,7 @@ import { Outlet, NavLink } from 'react-router-dom'
 import { FolderKanban, BookOpen, FileText, DownloadCloud, Building2 } from 'lucide-react'
 import { EmpresaSeletor } from '../../features/empresas/components/EmpresaSeletor'
 import { useEmpresaStore } from '../../features/empresas/store/useEmpresaStore'
+import { useEmpresa } from '../../db/hooks/useEmpresas'
 
 interface NavItemProps {
   to: string
@@ -50,7 +51,9 @@ const BOTTOM_NAV = [
 ]
 
 export function Layout() {
-  const { empresaAtiva } = useEmpresaStore()
+  const { empresaAtivaId } = useEmpresaStore()
+  // Busca dados da empresa ativa direto do Dexie para a cor de destaque
+  const empresaAtiva = useEmpresa(empresaAtivaId)
   const accentColor = empresaAtiva?.cor_destaque ?? 'var(--accent)'
 
   return (
@@ -79,7 +82,7 @@ export function Layout() {
           </span>
         </div>
 
-        {/* Seletor de empresa */}
+        {/* Seletor de empresa — dados vêm do Dexie */}
         <EmpresaSeletor />
 
         {/* Nav principal */}
