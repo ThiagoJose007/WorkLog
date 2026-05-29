@@ -4,6 +4,7 @@ import type { Projeto, ProjetoStatus } from '../../../db/types'
 import { createProjeto, updateProjeto } from '../../../db/hooks/useProjetos'
 import { ProjetoStatusBadge } from './StatusBadge'
 import { hoje } from '../../../shared/utils/time'
+import { toast } from '../../../shared/store/useToastStore'
 
 const STATUS_OPTIONS: ProjetoStatus[] = ['ativo', 'pausado', 'concluido', 'cancelado']
 
@@ -75,8 +76,10 @@ export function ProjetoModal({ projeto, empresaId, isOpen, onClose }: ProjetoMod
       }
       if (isEditing) {
         await updateProjeto(projeto.id, payload)
+        toast('Projeto atualizado')
       } else {
         await createProjeto(payload)
+        toast('Projeto criado')
       }
       onClose()
     } catch {

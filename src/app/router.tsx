@@ -3,6 +3,8 @@ import { Layout } from '../shared/components/Layout'
 import { EmpresasPage } from '../features/empresas/pages/EmpresasPage'
 import { ProjetosPage } from '../features/projetos/pages/ProjetosPage'
 import { ProjetoPage } from '../features/projetos/pages/ProjetoPage'
+import { RegistrosPage } from '../features/registros/pages/RegistrosPage'
+import { RelatorioPage } from '../features/relatorio/pages/RelatorioPage'
 
 function PlaceholderPage({ title }: { title: string }) {
   return (
@@ -28,8 +30,8 @@ export function AppRouter() {
         <Route path="empresas" element={<EmpresasPage />} />
         <Route path="projetos" element={<ProjetosPage />} />
         <Route path="projetos/:projetoId" element={<ProjetoPage />} />
-        <Route path="registros" element={<PlaceholderPage title="Registros Diários" />} />
-        <Route path="relatorio" element={<PlaceholderPage title="Relatório PDF" />} />
+        <Route path="registros" element={<RegistrosPage />} />
+        <Route path="relatorio" element={<RelatorioPage />} />
         <Route path="backup" element={<PlaceholderPage title="Backup" />} />
       </Route>
     </Routes>

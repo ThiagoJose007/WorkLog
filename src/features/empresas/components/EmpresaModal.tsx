@@ -3,6 +3,7 @@ import { X, Upload, Palette, Trash2 } from 'lucide-react'
 import type { Empresa } from '../../../db/types'
 import { createEmpresa, updateEmpresa } from '../../../db/hooks/useEmpresas'
 import { resizeImageToBase64 } from '../../../shared/utils/image'
+import { toast } from '../../../shared/store/useToastStore'
 
 // Paleta de cores pré-definidas
 const CORES_PRESET = [
@@ -101,8 +102,10 @@ export function EmpresaModal({ empresa, isOpen, onClose }: EmpresaModalProps) {
       }
       if (isEditing) {
         await updateEmpresa(empresa.id, payload)
+        toast('Empresa atualizada')
       } else {
         await createEmpresa(payload)
+        toast('Empresa criada')
       }
       onClose()
     } catch {

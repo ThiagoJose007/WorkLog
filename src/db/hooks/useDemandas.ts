@@ -8,6 +8,7 @@ import type {
   RegistroTempo,
   FerramentaLink,
 } from '../types'
+import { hoje } from '../../shared/utils/time'
 
 // ── Demandas ────────────────────────────────────────────────────────────────
 
@@ -203,6 +204,30 @@ export async function addRegistroTempoManual(
 
 export async function deleteRegistroTempo(id: string): Promise<void> {
   await db.registrosTempo.delete(id)
+}
+
+/** Cria um registro de tempo do tipo timer (inicio=now, fim=indefinido). RN-11. */
+export async function iniciarTimer(demandaId: string): Promise<string> {
+  const id = crypto.randomUUID()
+  await db.registrosTempo.add({
+    id,
+    demanda_id: demandaId,
+    data: hoje(),
+    duracao_min: 0,
+    tipo: 'timer',
+    inicio: Date.now(),
+    created_at: Date.now(),
+  })
+  return id
+}
+
+/** Encerra um timer ativo: grava fim e duracao_min calculada. */
+export async function encerrarTimerAtivo(
+  registroId: string,
+  elapsedMs: number,
+): Promise<void> {
+  const duracao_min = Math.max(1, Math.round(elapsedMs / 60000))
+  await db.registrosTempo.update(registroId, { fim: Date.now(), duracao_min })
 }
 
 // ── Detecção automática de ferramenta por URL (RN-14) ───────────────────────

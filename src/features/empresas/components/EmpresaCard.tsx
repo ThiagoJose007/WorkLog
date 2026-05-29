@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Edit2, Archive, ArchiveRestore, CheckCircle2 } from 'lucide-react'
 import type { Empresa } from '../../../db/types'
 import { arquivarEmpresa, updateEmpresa } from '../../../db/hooks/useEmpresas'
+import { toast } from '../../../shared/store/useToastStore'
 
 interface EmpresaCardProps {
   empresa: Empresa
@@ -18,10 +19,12 @@ export function EmpresaCard({ empresa, isActive, onSelect, onEdit }: EmpresaCard
   async function handleArquivar() {
     await arquivarEmpresa(empresa.id)
     setConfirmando(false)
+    toast('Empresa arquivada', 'info')
   }
 
   async function handleRestaurar() {
     await updateEmpresa(empresa.id, { status: 'ativo' })
+    toast('Empresa restaurada')
   }
 
   return (

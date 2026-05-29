@@ -1,17 +1,20 @@
-import { Outlet, NavLink } from 'react-router-dom'
+import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import { FolderKanban, BookOpen, FileText, DownloadCloud, Building2 } from 'lucide-react'
 import { EmpresaSeletor } from '../../features/empresas/components/EmpresaSeletor'
 import { useEmpresaStore } from '../../features/empresas/store/useEmpresaStore'
 import { useEmpresa } from '../../db/hooks/useEmpresas'
+import { Toast } from './Toast'
+import { useKeyboardShortcut } from '../hooks/useKeyboardShortcut'
 
 interface NavItemProps {
   to: string
   icon: React.ElementType
   label: string
   accentColor: string
+  shortcut?: string
 }
 
-function NavItem({ to, icon: Icon, label, accentColor }: NavItemProps) {
+function NavItem({ to, icon: Icon, label, accentColor, shortcut }: NavItemProps) {
   return (
     <NavLink
       to={to}
@@ -32,7 +35,22 @@ function NavItem({ to, icon: Icon, label, accentColor }: NavItemProps) {
             />
           )}
           <Icon size={15} strokeWidth={1.75} />
-          {label}
+          <span className="flex-1">{label}</span>
+          {shortcut && (
+            <kbd
+              className="text-xs px-1 py-0.5 rounded"
+              style={{
+                fontSize: '10px',
+                fontFamily: 'monospace',
+                backgroundColor: 'var(--bg-base)',
+                color: 'var(--text-muted)',
+                border: '0.5px solid var(--border)',
+                lineHeight: 1,
+              }}
+            >
+              {shortcut}
+            </kbd>
+          )}
         </>
       )}
     </NavLink>
@@ -40,9 +58,9 @@ function NavItem({ to, icon: Icon, label, accentColor }: NavItemProps) {
 }
 
 const MAIN_NAV = [
-  { to: '/projetos', icon: FolderKanban, label: 'Projetos' },
-  { to: '/registros', icon: BookOpen, label: 'Registros' },
-  { to: '/relatorio', icon: FileText, label: 'Relatório' },
+  { to: '/projetos', icon: FolderKanban, label: 'Projetos', shortcut: undefined },
+  { to: '/registros', icon: BookOpen, label: 'Registros', shortcut: 'R' },
+  { to: '/relatorio', icon: FileText, label: 'Relatório', shortcut: undefined },
 ]
 
 const BOTTOM_NAV = [
@@ -52,9 +70,12 @@ const BOTTOM_NAV = [
 
 export function Layout() {
   const { empresaAtivaId } = useEmpresaStore()
-  // Busca dados da empresa ativa direto do Dexie para a cor de destaque
   const empresaAtiva = useEmpresa(empresaAtivaId)
   const accentColor = empresaAtiva?.cor_destaque ?? 'var(--accent)'
+  const navigate = useNavigate()
+
+  // R → vai para Registros (quando não está em input)
+  useKeyboardShortcut('r', () => navigate('/registros'))
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -69,8 +90,8 @@ export function Layout() {
           style={{ borderColor: 'var(--border)' }}
         >
           <div
-            className="w-6 h-6 rounded flex items-center justify-center flex-shrink-0"
-            style={{ backgroundColor: 'var(--accent)' }}
+            className="w-6 h-6 rounded flex items-center justify-center flex-shrink-0 transition-colors"
+            style={{ backgroundColor: accentColor }}
           >
             <span className="text-xs font-bold text-white leading-none">W</span>
           </div>
@@ -99,8 +120,8 @@ export function Layout() {
           >
             Navegação
           </p>
-          {MAIN_NAV.map(({ to, icon, label }) => (
-            <NavItem key={to} to={to} icon={icon} label={label} accentColor={accentColor} />
+          {MAIN_NAV.map(({ to, icon, label, shortcut }) => (
+            <NavItem key={to} to={to} icon={icon} label={label} accentColor={accentColor} shortcut={shortcut} />
           ))}
         </nav>
 
@@ -116,6 +137,8 @@ export function Layout() {
       <main className="flex-1 overflow-auto" style={{ backgroundColor: 'var(--bg-base)' }}>
         <Outlet />
       </main>
+
+      <Toast />
     </div>
   )
 }

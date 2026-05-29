@@ -63,6 +63,8 @@ export {
   deleteDemandaImagem,
   addRegistroTempoManual,
   deleteRegistroTempo,
+  iniciarTimer,
+  encerrarTimerAtivo,
   detectarFerramenta,
 } from './hooks/useDemandas'
 

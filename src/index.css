@@ -69,6 +69,48 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ── TipTap editor ───────────────────────────────────────────────────────── */
+
+.tiptap-wrapper .ProseMirror {
+  min-height: 100px;
+  outline: none;
+  line-height: 1.6;
+}
+
+.tiptap-wrapper .ProseMirror > * + * {
+  margin-top: 0.5em;
+}
+
+.tiptap-wrapper .ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: var(--text-muted);
+  pointer-events: none;
+  height: 0;
+}
+
+.tiptap-wrapper .ProseMirror ul {
+  list-style: disc;
+  padding-left: 1.5em;
+}
+
+.tiptap-wrapper .ProseMirror ol {
+  list-style: decimal;
+  padding-left: 1.5em;
+}
+
+.tiptap-wrapper .ProseMirror li > p {
+  margin: 0;
+}
+
+.tiptap-wrapper .ProseMirror strong {
+  font-weight: 600;
+}
+
+.tiptap-wrapper .ProseMirror em {
+  font-style: italic;
+}
+
 /* Scrollbar personalizada */
 ::-webkit-scrollbar {
   width: 6px;
@@ -83,4 +125,21 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-muted);
+}
+
+/* ── Toast notifications ─────────────────────────────────────────────────── */
+
+@keyframes toast-in {
+  from {
+    transform: translateX(calc(100% + 32px));
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.toast-card {
+  animation: toast-in 0.22s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }

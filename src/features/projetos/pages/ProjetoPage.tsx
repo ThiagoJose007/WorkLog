@@ -9,20 +9,40 @@ import {
   Info,
   Calendar,
   AlertCircle,
+  Plus,
 } from 'lucide-react'
 import { useProjeto, useProjetoStats } from '../../../db/hooks/useProjetos'
 import { useEmpresa } from '../../../db/hooks/useEmpresas'
 import { useDemandas } from '../../../db/hooks/useDemandas'
-import { ProjetoStatusBadge, DemandaStatusBadge, DemandaTipoBadge, DemandaPrioridadeDot } from '../components/StatusBadge'
+import type { Demanda } from '../../../db/types'
+import { ProjetoStatusBadge } from '../components/StatusBadge'
 import { ProjetoModal } from '../components/ProjetoModal'
+import { DemandaCard } from '../../demandas/components/DemandaCard'
+import { DemandaModal } from '../../demandas/components/DemandaModal'
 import { formatarTempo, formatarData } from '../../../shared/utils/time'
+import { useKeyboardShortcut } from '../../../shared/hooks/useKeyboardShortcut'
 
 type Tab = 'demandas' | 'membros' | 'sobre'
 
 // ── Sub-componentes de tab ────────────────────────────────────────────────────
 
-function DemandasTab({ projetoId }: { projetoId: string }) {
+function DemandasTab({ projetoId, accentColor }: { projetoId: string; accentColor: string }) {
   const demandas = useDemandas(projetoId)
+  const [demandaEditando, setDemandaEditando] = useState<Demanda | undefined>()
+  const [modalAberto, setModalAberto] = useState(false)
+
+  function handleNova() {
+    setDemandaEditando(undefined)
+    setModalAberto(true)
+  }
+
+  function handleEditar(demanda: Demanda) {
+    setDemandaEditando(demanda)
+    setModalAberto(true)
+  }
+
+  // N → nova demanda (quando o modal não está aberto)
+  useKeyboardShortcut('n', handleNova, !modalAberto)
 
   if (demandas === undefined) {
     return (
@@ -30,7 +50,7 @@ function DemandasTab({ projetoId }: { projetoId: string }) {
         {[1, 2, 3].map((i) => (
           <div
             key={i}
-            className="h-12 rounded-lg animate-pulse"
+            className="h-16 rounded-xl animate-pulse"
             style={{ backgroundColor: 'var(--bg-surface)' }}
           />
         ))}
@@ -38,49 +58,70 @@ function DemandasTab({ projetoId }: { projetoId: string }) {
     )
   }
 
-  if (demandas.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center py-16 text-center">
-        <div
-          className="w-12 h-12 rounded-xl flex items-center justify-center mb-3"
-          style={{ backgroundColor: 'var(--bg-elevated)', border: '0.5px solid var(--border)' }}
-        >
-          <Layers size={20} style={{ color: 'var(--text-muted)' }} />
-        </div>
-        <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>
-          Nenhuma demanda
-        </p>
-        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-          As demandas do projeto aparecerão aqui
-        </p>
-      </div>
-    )
-  }
-
   return (
-    <div className="space-y-1.5 py-2">
-      {demandas.map((demanda) => (
-        <div
-          key={demanda.id}
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors hover:bg-[var(--bg-surface)]"
-          style={{ border: '0.5px solid transparent' }}
+    <>
+      {/* Header da tab com botão Nova */}
+      <div className="flex items-center justify-between py-3">
+        <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
+          {demandas.length === 0
+            ? 'Nenhuma demanda'
+            : `${demandas.length} demanda${demandas.length !== 1 ? 's' : ''}`}
+        </span>
+        <button
+          onClick={handleNova}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-opacity hover:opacity-90"
+          style={{ backgroundColor: accentColor, color: '#fff' }}
         >
-          <div className="flex-1 min-w-0 flex items-center gap-2">
-            <DemandaTipoBadge tipo={demanda.tipo} />
-            <span
-              className="text-sm truncate"
-              style={{ color: 'var(--text-primary)' }}
-            >
-              {demanda.titulo}
-            </span>
+          <Plus size={12} />
+          Nova demanda
+        </button>
+      </div>
+
+      {demandas.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <div
+            className="w-12 h-12 rounded-xl flex items-center justify-center mb-3"
+            style={{ backgroundColor: 'var(--bg-elevated)', border: '0.5px solid var(--border)' }}
+          >
+            <Layers size={20} style={{ color: 'var(--text-muted)' }} />
           </div>
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <DemandaPrioridadeDot prioridade={demanda.prioridade} />
-            <DemandaStatusBadge status={demanda.status} />
-          </div>
+          <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>
+            Nenhuma demanda ainda
+          </p>
+          <p className="text-xs mb-4" style={{ color: 'var(--text-muted)' }}>
+            Crie a primeira demanda para organizar o trabalho
+          </p>
+          <button
+            onClick={handleNova}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-opacity hover:opacity-90"
+            style={{ backgroundColor: accentColor, color: '#fff' }}
+          >
+            <Plus size={12} />
+            Nova demanda
+          </button>
         </div>
-      ))}
-    </div>
+      ) : (
+        <div className="space-y-2">
+          {demandas.map((demanda) => (
+            <DemandaCard
+              key={demanda.id}
+              demanda={demanda}
+              onClick={() => handleEditar(demanda)}
+            />
+          ))}
+        </div>
+      )}
+
+      <DemandaModal
+        demanda={demandaEditando}
+        projetoId={projetoId}
+        isOpen={modalAberto}
+        onClose={() => {
+          setModalAberto(false)
+          setDemandaEditando(undefined)
+        }}
+      />
+    </>
   )
 }
 
@@ -366,7 +407,7 @@ export function ProjetoPage() {
       {/* ── Conteúdo da tab ── */}
       <div className="flex-1 px-6 py-4 max-w-4xl mx-auto w-full">
         {activeTab === 'demandas' && projetoId && (
-          <DemandasTab projetoId={projetoId} />
+          <DemandasTab projetoId={projetoId} accentColor={accentColor} />
         )}
         {activeTab === 'membros' && <MembrosTab />}
         {activeTab === 'sobre' && projetoId && (
