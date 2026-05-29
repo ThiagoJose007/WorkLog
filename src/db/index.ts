@@ -36,6 +36,7 @@ export {
 export {
   useProjetos,
   useProjeto,
+  useProjetoStats,
   useTotalHorasProjeto,
   createProjeto,
   updateProjeto,

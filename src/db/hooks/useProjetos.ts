@@ -42,6 +42,30 @@ export function useTotalHorasProjeto(projetoId: string | null | undefined) {
   }, [projetoId])
 }
 
+/**
+ * Stats consolidados de um projeto em uma única query Dexie:
+ * quantidade de demandas e total de minutos registrados.
+ */
+export function useProjetoStats(projetoId: string | null | undefined) {
+  return useLiveQuery(async () => {
+    if (!projetoId) return { demandaCount: 0, totalMinutos: 0 }
+
+    const demandas = await db.demandas
+      .where('projeto_id').equals(projetoId).toArray()
+
+    const demandaIds = demandas.map((d) => d.id)
+    const registros =
+      demandaIds.length > 0
+        ? await db.registrosTempo.where('demanda_id').anyOf(demandaIds).toArray()
+        : []
+
+    return {
+      demandaCount: demandas.length,
+      totalMinutos: registros.reduce((acc, r) => acc + r.duracao_min, 0),
+    }
+  }, [projetoId])
+}
+
 // ── Mutações ────────────────────────────────────────────────────────────────
 
 export async function createProjeto(
