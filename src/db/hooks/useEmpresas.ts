@@ -4,13 +4,13 @@ import type { Empresa } from '../types'
 
 /** Todas as empresas ativas (ou todas se incluirArquivadas=true). */
 export function useEmpresas(opts?: { incluirArquivadas?: boolean }) {
-  return useLiveQuery(
-    () =>
-      opts?.incluirArquivadas
-        ? db.empresas.orderBy('nome').toArray()
-        : db.empresas.where('status').equals('ativo').sortBy('nome'),
-    [opts?.incluirArquivadas],
-  )
+  return useLiveQuery(async () => {
+    const todas = await db.empresas.toArray()
+    const filtradas = opts?.incluirArquivadas
+      ? todas
+      : todas.filter((e) => e.status === 'ativo')
+    return filtradas.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'))
+  }, [opts?.incluirArquivadas])
 }
 
 /** Empresa pelo id. Retorna undefined enquanto carrega, null se não existe. */

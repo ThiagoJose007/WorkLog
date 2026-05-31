@@ -1,10 +1,13 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
-import { FolderKanban, BookOpen, FileText, DownloadCloud, Building2 } from 'lucide-react'
+import { FolderKanban, BookOpen, FileText, DownloadCloud, Building2, Upload } from 'lucide-react'
+import { useRef, useState } from 'react'
 import { EmpresaSeletor } from '../../features/empresas/components/EmpresaSeletor'
 import { useEmpresaStore } from '../../features/empresas/store/useEmpresaStore'
 import { useEmpresa } from '../../db/hooks/useEmpresas'
 import { Toast } from './Toast'
 import { useKeyboardShortcut } from '../hooks/useKeyboardShortcut'
+import { exportBackup, parseBackupFile, getBackupSummary, importBackup } from '../../features/backup/utils/backupUtils'
+import { toast } from '../store/useToastStore'
 
 interface NavItemProps {
   to: string
@@ -73,9 +76,40 @@ export function Layout() {
   const empresaAtiva = useEmpresa(empresaAtivaId)
   const accentColor = empresaAtiva?.cor_destaque ?? 'var(--accent)'
   const navigate = useNavigate()
+  const importInputRef = useRef<HTMLInputElement>(null)
+  const [exporting, setExporting] = useState(false)
 
-  // R → vai para Registros (quando não está em input)
   useKeyboardShortcut('r', () => navigate('/registros'))
+
+  async function handleQuickExport() {
+    setExporting(true)
+    try {
+      await exportBackup()
+      toast('Backup exportado')
+    } catch {
+      toast('Erro ao exportar', 'error')
+    } finally {
+      setExporting(false)
+    }
+  }
+
+  async function handleQuickImport(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    e.target.value = ''
+    try {
+      const backup = await parseBackupFile(file)
+      const s = getBackupSummary(backup)
+      const ok = window.confirm(
+        `Mesclar backup?\n\n${s.empresas} empresa(s) · ${s.projetos} projeto(s) · ${s.demandas} demanda(s)\n\nOS DADOS EXISTENTES NÃO SERÃO APAGADOS (modo mesclar).`
+      )
+      if (!ok) return
+      await importBackup(backup, 'merge')
+      toast('Backup importado (mesclado)')
+    } catch (err) {
+      toast((err as Error).message, 'error')
+    }
+  }
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -130,6 +164,50 @@ export function Layout() {
           {BOTTOM_NAV.map(({ to, icon, label }) => (
             <NavItem key={to} to={to} icon={icon} label={label} accentColor={accentColor} />
           ))}
+
+          {/* Quick backup actions */}
+          <div className="pt-1 pb-0.5">
+            <p
+              className="px-3 mb-1.5"
+              style={{
+                fontSize: '10px',
+                fontWeight: 600,
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                color: 'var(--text-muted)',
+              }}
+            >
+              Dados
+            </p>
+            <div className="flex gap-1.5 px-1">
+              <button
+                onClick={handleQuickExport}
+                disabled={exporting}
+                title="Exportar backup"
+                className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-xs transition-colors hover:bg-[var(--bg-elevated)] disabled:opacity-50"
+                style={{ color: 'var(--text-secondary)' }}
+              >
+                <DownloadCloud size={13} />
+                Exportar
+              </button>
+              <button
+                onClick={() => importInputRef.current?.click()}
+                title="Importar backup"
+                className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-xs transition-colors hover:bg-[var(--bg-elevated)]"
+                style={{ color: 'var(--text-secondary)' }}
+              >
+                <Upload size={13} />
+                Importar
+              </button>
+              <input
+                ref={importInputRef}
+                type="file"
+                accept=".json,application/json"
+                className="hidden"
+                onChange={handleQuickImport}
+              />
+            </div>
+          </div>
         </div>
       </aside>
 
