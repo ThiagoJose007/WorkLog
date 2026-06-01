@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { X, Bold, Italic, List, ImagePlus, Trash2 } from 'lucide-react'
+import { X, Bold, Italic, List, ImagePlus, Trash2, Clock } from 'lucide-react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
@@ -28,34 +28,51 @@ import { DemandaSelector } from './DemandaSelector'
 function DemandaChip({
   demanda,
   onRemove,
+  onOpen,
 }: {
   demanda: Demanda
   onRemove: () => void
+  onOpen?: (tab: 'detalhes' | 'timer') => void
 }) {
   const projeto = useProjeto(demanda.projeto_id)
 
   return (
     <div
       className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl"
-      style={{
-        backgroundColor: 'var(--bg-surface)',
-        border: '0.5px solid var(--border)',
-      }}
+      style={{ backgroundColor: 'var(--bg-surface)', border: '0.5px solid var(--border)' }}
     >
       <DemandaTipoBadge tipo={demanda.tipo} />
 
-      <div className="flex-1 min-w-0">
+      <button
+        type="button"
+        onClick={() => onOpen?.('detalhes')}
+        className="flex-1 min-w-0 text-left transition-opacity hover:opacity-70"
+        style={{ cursor: onOpen ? 'pointer' : 'default' }}
+      >
         <p className="text-xs font-medium truncate" style={{ color: 'var(--text-primary)' }}>
           {demanda.titulo}
         </p>
         <p className="text-xs truncate mt-0.5" style={{ color: 'var(--text-muted)' }}>
           {projeto?.nome ?? '…'}
         </p>
-      </div>
+      </button>
 
       <DemandaStatusBadge status={demanda.status} />
 
+      {onOpen && (
+        <button
+          type="button"
+          onClick={() => onOpen('timer')}
+          className="p-1 rounded flex-shrink-0 transition-colors hover:bg-[var(--color-tempo-fill)]"
+          style={{ color: 'var(--color-tempo-text)' }}
+          title="Abrir timer"
+        >
+          <Clock size={12} />
+        </button>
+      )}
+
       <button
+        type="button"
         onClick={onRemove}
         className="p-1 rounded flex-shrink-0 transition-colors hover:bg-[var(--bg-elevated)]"
         style={{ color: 'var(--text-muted)' }}
@@ -73,9 +90,10 @@ interface RegistroEditorProps {
   data: string       // YYYY-MM-DD
   empresaId: string
   accentColor: string
+  onDemandaOpen?: (demanda: Demanda, tab: 'detalhes' | 'timer') => void
 }
 
-export function RegistroEditor({ data, empresaId, accentColor }: RegistroEditorProps) {
+export function RegistroEditor({ data, empresaId, accentColor, onDemandaOpen }: RegistroEditorProps) {
   const existingRecord = useRegistroDiarioPorData(empresaId, data)
 
   // diarioId é null até o registro ser criado (lazy)
@@ -282,6 +300,7 @@ export function RegistroEditor({ data, empresaId, accentColor }: RegistroEditorP
                 key={d.id}
                 demanda={d}
                 onRemove={() => handleDesvincular(d.id)}
+                onOpen={onDemandaOpen ? (tab) => onDemandaOpen(d, tab) : undefined}
               />
             ))}
           </div>

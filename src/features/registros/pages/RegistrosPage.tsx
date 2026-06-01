@@ -5,7 +5,9 @@ import { useEmpresaStore } from '../../empresas/store/useEmpresaStore'
 import { useEmpresa } from '../../../db/hooks/useEmpresas'
 import { useRegistrosDiarios } from '../../../db/hooks/useRegistros'
 import { RegistroEditor } from '../components/RegistroEditor'
+import { DemandaModal } from '../../demandas/components/DemandaModal'
 import { hoje } from '../../../shared/utils/time'
+import type { Demanda } from '../../../db/types'
 
 // ── Helpers de data ──────────────────────────────────────────────────────────
 
@@ -84,6 +86,15 @@ export function RegistrosPage() {
 
   const [weekOffset, setWeekOffset] = useState(0)
   const [selectedDate, setSelectedDate] = useState(hoje())
+  const [modalDemanda, setModalDemanda] = useState<Demanda | undefined>()
+  const [modalTab, setModalTab] = useState<'detalhes' | 'timer'>('timer')
+  const [modalAberto, setModalAberto] = useState(false)
+
+  function handleAbrirDemanda(demanda: Demanda, tab: 'detalhes' | 'timer') {
+    setModalDemanda(demanda)
+    setModalTab(tab)
+    setModalAberto(true)
+  }
 
   const todayStr = hoje()
   const weekDates = useMemo(() => getWeekDates(weekOffset), [weekOffset])
@@ -316,7 +327,19 @@ export function RegistrosPage() {
         data={selectedDate}
         empresaId={empresaAtivaId}
         accentColor={accentColor}
+        onDemandaOpen={handleAbrirDemanda}
       />
+
+      {/* Modal de demanda aberto a partir dos chips */}
+      {modalDemanda && (
+        <DemandaModal
+          demanda={modalDemanda}
+          projetoId={modalDemanda.projeto_id}
+          isOpen={modalAberto}
+          initialTab={modalTab}
+          onClose={() => { setModalAberto(false); setModalDemanda(undefined) }}
+        />
+      )}
     </div>
   )
 }

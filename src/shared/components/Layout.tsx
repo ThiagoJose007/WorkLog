@@ -1,6 +1,7 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
-import { FolderKanban, BookOpen, FileText, DownloadCloud, Building2, Upload } from 'lucide-react'
+import { FolderKanban, BookOpen, FileText, DownloadCloud, Building2, Upload, Layers } from 'lucide-react'
 import { useRef, useState } from 'react'
+import { TimerOverlay } from './TimerOverlay'
 import { EmpresaSeletor } from '../../features/empresas/components/EmpresaSeletor'
 import { useEmpresaStore } from '../../features/empresas/store/useEmpresaStore'
 import { useEmpresa } from '../../db/hooks/useEmpresas'
@@ -61,6 +62,7 @@ function NavItem({ to, icon: Icon, label, accentColor, shortcut }: NavItemProps)
 }
 
 const MAIN_NAV = [
+  { to: '/demandas', icon: Layers, label: 'Demandas', shortcut: undefined },
   { to: '/projetos', icon: FolderKanban, label: 'Projetos', shortcut: undefined },
   { to: '/registros', icon: BookOpen, label: 'Registros', shortcut: 'R' },
   { to: '/relatorio', icon: FileText, label: 'Relatório', shortcut: undefined },
@@ -212,8 +214,11 @@ export function Layout() {
       </aside>
 
       {/* ── Conteúdo principal ── */}
-      <main className="flex-1 overflow-auto" style={{ backgroundColor: 'var(--bg-base)' }}>
-        <Outlet />
+      <main className="flex-1 overflow-auto flex flex-col" style={{ backgroundColor: 'var(--bg-base)' }}>
+        {empresaAtivaId && <TimerOverlay accentColor={accentColor} />}
+        <div className="flex-1 overflow-auto">
+          <Outlet />
+        </div>
       </main>
 
       <Toast />

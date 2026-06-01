@@ -5,9 +5,31 @@ import type {
   DemandaLink,
   DemandaImagem,
   DemandaStatus,
+  Projeto,
   RegistroTempo,
   FerramentaLink,
 } from '../types'
+
+export interface DemandaComProjeto {
+  demanda: Demanda
+  projeto: Projeto
+}
+
+/** Todas as demandas da empresa, com info do projeto. Útil para seletores globais. */
+export function useDemandasComProjeto(empresaId: string | null | undefined): DemandaComProjeto[] | undefined {
+  return useLiveQuery(async (): Promise<DemandaComProjeto[]> => {
+    if (!empresaId) return []
+    const projetos = await db.projetos.where('empresa_id').equals(empresaId).toArray()
+    if (projetos.length === 0) return []
+    const projetoMap = new Map(projetos.map((p) => [p.id, p]))
+    const demandas = await db.demandas
+      .where('projeto_id').anyOf(projetos.map((p) => p.id))
+      .sortBy('titulo')
+    return demandas
+      .map((d) => ({ demanda: d, projeto: projetoMap.get(d.projeto_id)! }))
+      .filter((x) => x.projeto !== undefined)
+  }, [empresaId])
+}
 import { hoje } from '../../shared/utils/time'
 
 // ── Demandas ────────────────────────────────────────────────────────────────

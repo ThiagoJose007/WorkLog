@@ -11,9 +11,10 @@ import { formatarTempo } from '../../../shared/utils/time'
 interface DemandaCardProps {
   demanda: Demanda
   onClick: () => void
+  onTimerClick?: () => void
 }
 
-export function DemandaCard({ demanda, onClick }: DemandaCardProps) {
+export function DemandaCard({ demanda, onClick, onTimerClick }: DemandaCardProps) {
   const totalMinutos = useTotalMinutosDemanda(demanda.id) ?? 0
 
   return (
@@ -52,15 +53,25 @@ export function DemandaCard({ demanda, onClick }: DemandaCardProps) {
 
           <div className="flex flex-col items-end gap-2 flex-shrink-0">
             <DemandaStatusBadge status={demanda.status} />
-            {totalMinutos > 0 && (
-              <span
-                className="flex items-center gap-1 text-xs"
-                style={{ color: 'var(--text-muted)' }}
-              >
-                <Clock size={11} />
-                {formatarTempo(totalMinutos)}
-              </span>
-            )}
+            <div className="flex items-center gap-1.5">
+              {totalMinutos > 0 && (
+                <span className="flex items-center gap-1 text-xs" style={{ color: 'var(--text-muted)' }}>
+                  <Clock size={11} />
+                  {formatarTempo(totalMinutos)}
+                </span>
+              )}
+              {onTimerClick && (
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); onTimerClick() }}
+                  className="p-1 rounded transition-colors hover:bg-[var(--color-tempo-fill)]"
+                  style={{ color: 'var(--color-tempo-text)' }}
+                  title="Abrir timer"
+                >
+                  <Clock size={12} />
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>

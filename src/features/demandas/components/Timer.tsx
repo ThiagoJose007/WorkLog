@@ -30,11 +30,10 @@ export function Timer({ demanda }: { demanda: Demanda }) {
   const registros = useRegistrosTempo(demanda.id)
   const totalMinutos = useTotalMinutosDemanda(demanda.id) ?? 0
 
-  // ── Timer display ─────────────────────────────────────────────────────────
   const [displayMs, setDisplayMs] = useState(0)
   const [paused, setPaused] = useState(false)
-  const totalPausedRef = useRef(0)   // ms paused accumulated
-  const pausedAtRef = useRef<number | null>(null) // when current pause started
+  const totalPausedRef = useRef(0)
+  const pausedAtRef = useRef<number | null>(null)
   const [confirmarEncerramento, setConfirmarEncerramento] = useState(false)
 
   const isThisTimerActive = timerAtivo?.demanda_id === demanda.id
@@ -43,7 +42,6 @@ export function Timer({ demanda }: { demanda: Demanda }) {
     ? paused ? 'paused' : 'running'
     : 'idle'
 
-  // Reset pause tracking when this timer stops
   useEffect(() => {
     if (!isThisTimerActive) {
       setPaused(false)
@@ -53,7 +51,6 @@ export function Timer({ demanda }: { demanda: Demanda }) {
     }
   }, [isThisTimerActive])
 
-  // Interval that updates the display counter
   useEffect(() => {
     if (!isThisTimerActive || paused || !timerAtivo?.inicio) return
     const inicio = timerAtivo.inicio
@@ -62,7 +59,7 @@ export function Timer({ demanda }: { demanda: Demanda }) {
     const id = setInterval(tick, 200)
     return () => clearInterval(id)
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isThisTimerActive, paused, timerAtivo?.id]) // id changes only when a new record starts
+  }, [isThisTimerActive, paused, timerAtivo?.id])
 
   // ── Timer handlers ────────────────────────────────────────────────────────
 
@@ -129,15 +126,11 @@ export function Timer({ demanda }: { demanda: Demanda }) {
   const [manualSaving, setManualSaving] = useState(false)
   const [manualError, setManualError] = useState('')
 
-  async function handleManualSubmit(e: React.FormEvent) {
-    e.preventDefault()
+  async function handleManualSubmit() {
     const h = Math.max(0, parseInt(manualHoras) || 0)
     const m = Math.max(0, Math.min(59, parseInt(manualMinutos) || 0))
     const total = h * 60 + m
-    if (total < 1) {
-      setManualError('Informe pelo menos 1 minuto.')
-      return
-    }
+    if (total < 1) { setManualError('Informe pelo menos 1 minuto.'); return }
     setManualSaving(true)
     setManualError('')
     try {
@@ -168,10 +161,7 @@ export function Timer({ demanda }: { demanda: Demanda }) {
       {confirmarEncerramento && (
         <div
           className="flex flex-col gap-3 p-4 rounded-xl"
-          style={{
-            backgroundColor: 'var(--color-demanda-fill)',
-            border: '0.5px solid #8B4A0030',
-          }}
+          style={{ backgroundColor: 'var(--color-demanda-fill)', border: '0.5px solid #8B4A0030' }}
         >
           <div className="flex items-start gap-2">
             <AlertTriangle size={15} style={{ color: 'var(--color-demanda-text)', flexShrink: 0, marginTop: 1 }} />
@@ -181,6 +171,7 @@ export function Timer({ demanda }: { demanda: Demanda }) {
           </div>
           <div className="flex gap-2 justify-end">
             <button
+              type="button"
               onClick={() => setConfirmarEncerramento(false)}
               className="px-3 py-1.5 rounded-lg text-xs transition-colors hover:bg-[var(--bg-elevated)]"
               style={{ color: 'var(--text-secondary)' }}
@@ -188,6 +179,7 @@ export function Timer({ demanda }: { demanda: Demanda }) {
               Cancelar
             </button>
             <button
+              type="button"
               onClick={handleConfirmarEncerrar}
               className="px-3 py-1.5 rounded-lg text-xs font-medium transition-opacity hover:opacity-90"
               style={{ backgroundColor: 'var(--color-demanda-text)', color: '#1a0a00' }}
@@ -222,6 +214,7 @@ export function Timer({ demanda }: { demanda: Demanda }) {
         <div className="flex items-center gap-2">
           {timerState === 'idle' && (
             <button
+              type="button"
               onClick={handleIniciar}
               className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-opacity hover:opacity-90"
               style={{ backgroundColor: 'var(--color-tempo-fill)', color: 'var(--color-tempo-text)', border: '0.5px solid #1d6b5a' }}
@@ -234,6 +227,7 @@ export function Timer({ demanda }: { demanda: Demanda }) {
           {timerState === 'running' && (
             <>
               <button
+                type="button"
                 onClick={handlePausar}
                 className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors hover:bg-[var(--bg-elevated)]"
                 style={{ border: '0.5px solid var(--border)', color: 'var(--text-secondary)' }}
@@ -242,6 +236,7 @@ export function Timer({ demanda }: { demanda: Demanda }) {
                 Pausar
               </button>
               <button
+                type="button"
                 onClick={handleParar}
                 className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-opacity hover:opacity-90"
                 style={{ backgroundColor: 'var(--color-danger-fill)', color: 'var(--color-danger-text)', border: '0.5px solid #b03030' }}
@@ -255,6 +250,7 @@ export function Timer({ demanda }: { demanda: Demanda }) {
           {timerState === 'paused' && (
             <>
               <button
+                type="button"
                 onClick={handleRetomar}
                 className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-opacity hover:opacity-90"
                 style={{ backgroundColor: 'var(--color-tempo-fill)', color: 'var(--color-tempo-text)', border: '0.5px solid #1d6b5a' }}
@@ -263,6 +259,7 @@ export function Timer({ demanda }: { demanda: Demanda }) {
                 Retomar
               </button>
               <button
+                type="button"
                 onClick={handleParar}
                 className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-opacity hover:opacity-90"
                 style={{ backgroundColor: 'var(--color-danger-fill)', color: 'var(--color-danger-text)', border: '0.5px solid #b03030' }}
@@ -289,16 +286,14 @@ export function Timer({ demanda }: { demanda: Demanda }) {
         </span>
       </div>
 
-      {/* Divider */}
       <div style={{ borderTop: '0.5px solid var(--border)' }} />
 
-      {/* Lançamento manual */}
+      {/* Lançamento manual — sem <form> para evitar aninhamento no DemandaModal */}
       <div className="space-y-3">
         <p className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>
           Lançamento manual
         </p>
-        <form onSubmit={handleManualSubmit} className="space-y-3">
-          {/* Linha 1: data + horas + minutos */}
+        <div className="space-y-3">
           <div className="grid grid-cols-3 gap-2">
             <div className="space-y-1.5">
               <label className="block text-xs" style={{ color: 'var(--text-muted)' }}>Data</label>
@@ -308,12 +303,7 @@ export function Timer({ demanda }: { demanda: Demanda }) {
                 onChange={(e) => setManualData(e.target.value)}
                 max={hoje()}
                 className="w-full px-2 py-1.5 rounded-md text-xs outline-none transition-all"
-                style={{
-                  backgroundColor: 'var(--bg-input)',
-                  border: '0.5px solid var(--border)',
-                  color: 'var(--text-primary)',
-                  colorScheme: 'dark',
-                }}
+                style={{ backgroundColor: 'var(--bg-input)', border: '0.5px solid var(--border)', color: 'var(--text-primary)', colorScheme: 'dark' }}
                 onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--accent)' }}
                 onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border)' }}
               />
@@ -324,17 +314,13 @@ export function Timer({ demanda }: { demanda: Demanda }) {
                 type="number"
                 value={manualHoras}
                 onChange={(e) => setManualHoras(e.target.value)}
-                min={0}
-                max={23}
+                min={0} max={23}
                 placeholder="0"
                 className="w-full px-2 py-1.5 rounded-md text-xs outline-none transition-all text-center"
-                style={{
-                  backgroundColor: 'var(--bg-input)',
-                  border: '0.5px solid var(--border)',
-                  color: 'var(--text-primary)',
-                }}
+                style={{ backgroundColor: 'var(--bg-input)', border: '0.5px solid var(--border)', color: 'var(--text-primary)' }}
                 onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--accent)' }}
                 onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border)' }}
+                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleManualSubmit() } }}
               />
             </div>
             <div className="space-y-1.5">
@@ -343,25 +329,20 @@ export function Timer({ demanda }: { demanda: Demanda }) {
                 type="number"
                 value={manualMinutos}
                 onChange={(e) => setManualMinutos(e.target.value)}
-                min={0}
-                max={59}
+                min={0} max={59}
                 placeholder="30"
                 className="w-full px-2 py-1.5 rounded-md text-xs outline-none transition-all text-center"
-                style={{
-                  backgroundColor: 'var(--bg-input)',
-                  border: '0.5px solid var(--border)',
-                  color: 'var(--text-primary)',
-                }}
+                style={{ backgroundColor: 'var(--bg-input)', border: '0.5px solid var(--border)', color: 'var(--text-primary)' }}
                 onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--accent)' }}
                 onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border)' }}
+                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleManualSubmit() } }}
               />
             </div>
           </div>
 
-          {/* Nota */}
           <div className="space-y-1.5">
             <label className="block text-xs" style={{ color: 'var(--text-muted)' }}>
-              Nota <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>(opcional)</span>
+              Nota <span style={{ fontWeight: 400 }}>(opcional)</span>
             </label>
             <input
               type="text"
@@ -370,13 +351,10 @@ export function Timer({ demanda }: { demanda: Demanda }) {
               placeholder="Ex: Reunião de planejamento"
               maxLength={200}
               className="w-full px-2 py-1.5 rounded-md text-xs outline-none transition-all"
-              style={{
-                backgroundColor: 'var(--bg-input)',
-                border: '0.5px solid var(--border)',
-                color: 'var(--text-primary)',
-              }}
+              style={{ backgroundColor: 'var(--bg-input)', border: '0.5px solid var(--border)', color: 'var(--text-primary)' }}
               onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--accent)' }}
               onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border)' }}
+              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleManualSubmit() } }}
             />
           </div>
 
@@ -385,7 +363,8 @@ export function Timer({ demanda }: { demanda: Demanda }) {
           )}
 
           <button
-            type="submit"
+            type="button"
+            onClick={handleManualSubmit}
             disabled={manualSaving}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-opacity hover:opacity-90 disabled:opacity-60"
             style={{ backgroundColor: 'var(--accent)', color: '#fff' }}
@@ -393,13 +372,12 @@ export function Timer({ demanda }: { demanda: Demanda }) {
             <Plus size={12} />
             {manualSaving ? 'Salvando…' : 'Adicionar registro'}
           </button>
-        </form>
+        </div>
       </div>
 
-      {/* Divider */}
       <div style={{ borderTop: '0.5px solid var(--border)' }} />
 
-      {/* Histórico de registros */}
+      {/* Histórico */}
       <div className="space-y-2">
         <p className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>
           Histórico{registros !== undefined && registros.length > 0 && ` · ${registros.length} registro${registros.length !== 1 ? 's' : ''}`}
@@ -425,42 +403,22 @@ export function Timer({ demanda }: { demanda: Demanda }) {
               <div
                 key={r.id}
                 className="flex items-center gap-3 px-3 py-2.5 rounded-lg"
-                style={{
-                  backgroundColor: 'var(--bg-surface)',
-                  border: '0.5px solid var(--border)',
-                }}
+                style={{ backgroundColor: 'var(--bg-surface)', border: '0.5px solid var(--border)' }}
               >
-                {/* Ícone tipo */}
                 <span title={r.tipo === 'timer' ? 'Cronômetro' : 'Manual'}>
-                  <Clock
-                    size={13}
-                    style={{
-                      color: r.tipo === 'timer' ? 'var(--color-tempo-text)' : 'var(--text-muted)',
-                      flexShrink: 0,
-                    }}
-                  />
+                  <Clock size={13} style={{ color: r.tipo === 'timer' ? 'var(--color-tempo-text)' : 'var(--text-muted)', flexShrink: 0 }} />
                 </span>
-
-                {/* Data */}
                 <span className="text-xs w-16 flex-shrink-0" style={{ color: 'var(--text-muted)' }}>
                   {formatarData(r.data)}
                 </span>
-
-                {/* Duração */}
-                <span
-                  className="text-xs font-medium w-14 flex-shrink-0"
-                  style={{ color: 'var(--text-primary)' }}
-                >
+                <span className="text-xs font-medium w-14 flex-shrink-0" style={{ color: 'var(--text-primary)' }}>
                   {formatarTempo(r.duracao_min)}
                 </span>
-
-                {/* Nota */}
                 <span className="flex-1 text-xs truncate" style={{ color: 'var(--text-secondary)' }}>
                   {r.nota ?? ''}
                 </span>
-
-                {/* Botão excluir */}
                 <button
+                  type="button"
                   onClick={() => deleteRegistroTempo(r.id)}
                   className="p-1 rounded transition-colors hover:bg-[var(--bg-elevated)] flex-shrink-0"
                   style={{ color: 'var(--text-muted)' }}

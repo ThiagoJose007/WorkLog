@@ -6,6 +6,9 @@ import { ProjetosPage } from '../features/projetos/pages/ProjetosPage'
 import { ProjetoPage } from '../features/projetos/pages/ProjetoPage'
 import { RegistrosPage } from '../features/registros/pages/RegistrosPage'
 
+const DemandasGlobalPage = lazy(() =>
+  import('../features/demandas/pages/DemandasGlobalPage').then((m) => ({ default: m.DemandasGlobalPage }))
+)
 // Lazy-loaded: evita carregar @react-pdf/renderer no boot
 const RelatorioPage = lazy(() =>
   import('../features/relatorio/pages/RelatorioPage').then((m) => ({ default: m.RelatorioPage }))
@@ -31,6 +34,14 @@ export function AppRouter() {
       <Route path="/" element={<Layout />}>
         <Route index element={<Navigate to="/empresas" replace />} />
         <Route path="empresas" element={<EmpresasPage />} />
+        <Route
+          path="demandas"
+          element={
+            <Suspense fallback={<PageLoader />}>
+              <DemandasGlobalPage />
+            </Suspense>
+          }
+        />
         <Route path="projetos" element={<ProjetosPage />} />
         <Route path="projetos/:projetoId" element={<ProjetoPage />} />
         <Route path="registros" element={<RegistrosPage />} />
